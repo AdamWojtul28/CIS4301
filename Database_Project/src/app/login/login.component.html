@@ -9,20 +9,21 @@
 	<div class="container">
 		<form [formGroup]="loginForm">
 
-			<mat-form-field class="user">
-				<input matInput placeholder="Username" formControlName="username" required>
-                <mat-error *ngIf="loginForm.get('username')?.hasError('required')">This field is required</mat-error>
-			</mat-form-field>
+            <div class="fields">
+		        <mat-form-field class="user">
+		        	<input matInput placeholder="Username" formControlName="username" required>
+                    <mat-error *ngIf="loginForm.get('username')?.hasError('required')">This field is required</mat-error>
+		        </mat-form-field>
 
-			<mat-form-field class="pass">
-				<input placeholder="Password" matInput [type]="hide ? 'password' : 'text'" formControlName="password">
-        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">This field is required</mat-error>
-
-			</mat-form-field>
-            
+		        <mat-form-field class="pass">
+		            <input placeholder="Password" matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    <mat-error *ngIf="loginForm.get('password')?.hasError('required')">This field is required</mat-error>
+                    <mat-error *ngIf="loginForm.value.password">Password must be a combination of lower-case, upper-case, numbers and at least 6 characters long</mat-error>
+		        </mat-form-field>
+            </div>
 			<button [disabled]="!loginForm.valid" mat-raised-button color="primary" (click)="login()">Login</button>
         </form>
 	</div>
