@@ -1,0 +1,39 @@
+  form{
+    max-width: 400px;
+    margin: auto;
+  }
+  .user{
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  .pass{
+    display: block;
+    margin-bottom: 15px;
+  }
+  button{
+    width: 100%;
+    border-radius: 20px;
+  }
+  a {
+    width: 120%;
+    border-radius: 20px;
+  }
+  .page-wrap{
+    display: flex;
+    flex-direction: column;
+    min-height: 50vh;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .link1 {
+    margin-bottom: 12px;
+  }
+  .link2 {
+    margin-bottom: 12px;
+  }
+  .container {
+    
+    margin-top: 80px;
+  }

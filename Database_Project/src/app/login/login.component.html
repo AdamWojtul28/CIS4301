@@ -1,0 +1,29 @@
+<div class="page-wrap">
+    <div class="link2">
+    <a mat-raised-button color="primary" href="#">Landing Page</a>
+    </div>
+    <div class="link1">
+    <a mat-raised-button color="primary" href="/register">Register</a>
+    </div>
+    
+	<div class="container">
+		<form [formGroup]="loginForm">
+
+			<mat-form-field class="user">
+				<input matInput placeholder="Username" formControlName="username" required>
+                <mat-error *ngIf="loginForm.get('username')?.hasError('required')">This field is required</mat-error>
+			</mat-form-field>
+
+			<mat-form-field class="pass">
+				<input placeholder="Password" matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">This field is required</mat-error>
+
+			</mat-form-field>
+            
+			<button [disabled]="!loginForm.valid" mat-raised-button color="primary" (click)="login()">Login</button>
+        </form>
+	</div>
+</div>
