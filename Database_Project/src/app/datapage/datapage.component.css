@@ -1,0 +1,30 @@
+.body {
+    margin-top: 50px;
+    text-align: center;
+}
+.button1 {
+    width: 170px;
+}
+.grid-container-element {
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    grid-gap: 20px; 
+    border: 1px solid black; 
+}
+.input {
+    border: 1px solid brown;
+    text-align: left;
+    margin-left: 40px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+.output {
+    border: 1px solid brown;
+    text-align: right;
+    margin-right: 40px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}

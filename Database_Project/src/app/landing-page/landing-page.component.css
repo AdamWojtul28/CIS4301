@@ -9,3 +9,11 @@ a {
     width: 13%;
     border-radius: 15px;
 }
+.dataButton{
+    margin-top: 50px;
+    text-align: center;
+}
+.dataBut {
+    width: 225px;
+    height: 100px;
+}
