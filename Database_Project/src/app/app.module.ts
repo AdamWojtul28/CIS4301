@@ -14,6 +14,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientModule } from '@angular/common/http';
@@ -45,7 +48,10 @@ import { DatapageComponent } from './datapage/datapage.component';
     MatListModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatIconModule
+    MatIconModule,
+    MatCardModule,
+    MatSliderModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -5,13 +5,68 @@
 
 <div class="grid-container-element">
     <div class="input">
-        <p>filter</p>
-        <p>slider</p>
-        <p>demo dots</p>
-        <p>body part dots</p>
-        <p>location dots</p>
+        <mat-card>
+            <mat-card-content>filter? questionable if we implement due to search</mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-title> Age Range of Patients </mat-card-title>
+            <section class="age-section" [formGroup]="ageGroup">
+                <mat-slider 
+                    class="slidercss"
+                    [max]="max"
+                    [min]="min"
+                    [step]="step"
+                    [discrete]="thumbLabel">
+                    <input matSliderStartThumb formControlName="ageStart">
+                    <input matSliderEndThumb formControlName="ageEnd">
+                </mat-slider>   
+            </section>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-title> Demographics to consider </mat-card-title>
+              <section class="demo-section" [formGroup]="demoGroup">
+                <h4>Select your toppings:</h4>
+                <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
+                <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
+                <p><mat-checkbox formControlName="hispanic">Hispanic</mat-checkbox></p>
+                <p><mat-checkbox formControlName="PI">Pacific Islander</mat-checkbox></p>
+              </section>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-title> Injured Body Part </mat-card-title>
+            <section class="body-section" [formGroup]="bodyGroup">
+                <h4>Select your toppings:</h4>
+                <p><mat-checkbox formControlName="upper">Upper</mat-checkbox></p>
+                <p><mat-checkbox formControlName="middle">Middle</mat-checkbox></p>
+                <p><mat-checkbox formControlName="lower">Lower</mat-checkbox></p>
+                <p><mat-checkbox formControlName="A">25%</mat-checkbox></p>
+                <p><mat-checkbox formControlName="B">50%</mat-checkbox></p>
+                <p><mat-checkbox formControlName="C">75%</mat-checkbox></p>
+                <p><mat-checkbox formControlName="D">100%</mat-checkbox></p>
+            </section>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-title> Location </mat-card-title>
+            <section class="location-section" [formGroup]="locationGroup">
+                <p><mat-checkbox formControlName="farm">Farm</mat-checkbox></p>
+                <p><mat-checkbox formControlName="city">City</mat-checkbox></p>
+                <p><mat-checkbox formControlName="school">School</mat-checkbox></p>
+                <p><mat-checkbox formControlName="factory">Factory</mat-checkbox></p>
+                <p><mat-checkbox formControlName="dayCare">Day Care</mat-checkbox></p>
+            </section>
+        </mat-card>
+
+        <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button>
     </div>
+
+    <!--  =======================================  GRAPH  ================================================  -->
+
     <div class="output">
         <p>graph chart</p>
     </div>
+    <button onclick="send()">Try it out</button>
 </div>

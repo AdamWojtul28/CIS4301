@@ -9,6 +9,7 @@
     margin-top: 40px;
     margin-left: 40px;
     margin-right: 40px;
+    height: 600px;
     display: grid; 
     grid-template-columns: 1fr 1fr; 
     grid-gap: 20px; 
@@ -20,11 +21,30 @@
     margin-left: 40px;
     margin-top: 40px;
     margin-bottom: 40px;
+    width: 350px;
 }
 .output {
     border: 1px solid brown;
     text-align: right;
+    width: 810px;
     margin-right: 40px;
     margin-top: 40px;
     margin-bottom: 40px;
+}
+mat-card {
+    margin: 20px;
+}
+mat-card-title {
+    margin: 10px;
+    font-size: medium;
+}
+.slidercss {
+    width: 290px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.submitButton {
+    margin-left: 20px;
+    margin-bottom: 5px;
+    width: 305px;
 }
