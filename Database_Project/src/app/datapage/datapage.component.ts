@@ -13,8 +13,8 @@ export class DatapageComponent {
   min = 0;
   step = 10;
   thumbLabel = true;
-  value1 = 0;
-  value2 = 100;
+  slideStart = 0;
+  slideEnd = 100;
   postId: string;
   ageGroup: FormGroup;
   demoGroup: FormGroup;
@@ -25,11 +25,8 @@ export class DatapageComponent {
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
   ngOnInit() {
     this.ageGroup = this._formBuilder.group({
-        ageStart: new FormControl(this.value1),
-        ageEnd: new FormControl(this.value2),
-        pepperoni: false,
-        extracheese: false,
-        mushroom: false,
+        ageStart: new FormControl(this.slideStart),
+        ageEnd: new FormControl(this.slideEnd)
     });
     this.demoGroup = this._formBuilder.group({
         white: false,

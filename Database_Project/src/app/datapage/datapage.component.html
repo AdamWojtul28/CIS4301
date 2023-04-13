@@ -4,14 +4,15 @@
 </div>
 
 <div class="grid-container-element">
+    <div>
     <div class="input">
-        <mat-card>
+        <mat-card class="card">
             <mat-card-content>filter? questionable if we implement due to search</mat-card-content>
         </mat-card>
 
-        <mat-card>
-            <mat-card-title> Age Range of Patients </mat-card-title>
-            <section class="age-section" [formGroup]="ageGroup">
+        <mat-card class="card">
+            <mat-card-title> Age Range of Patients: {{this.ageGroup.get('ageStart')?.value}} - {{this.ageGroup.get('ageEnd')?.value}}</mat-card-title>
+            <section class="slide-section" [formGroup]="ageGroup">
                 <mat-slider 
                     class="slidercss"
                     [max]="max"
@@ -24,10 +25,9 @@
             </section>
         </mat-card>
 
-        <mat-card>
+        <mat-card class="card">
             <mat-card-title> Demographics to consider </mat-card-title>
-              <section class="demo-section" [formGroup]="demoGroup">
-                <h4>Select your toppings:</h4>
+              <section class="check-section" [formGroup]="demoGroup">
                 <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
                 <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
                 <p><mat-checkbox formControlName="hispanic">Hispanic</mat-checkbox></p>
@@ -35,10 +35,9 @@
               </section>
         </mat-card>
 
-        <mat-card>
+        <mat-card class="card">
             <mat-card-title> Injured Body Part </mat-card-title>
-            <section class="body-section" [formGroup]="bodyGroup">
-                <h4>Select your toppings:</h4>
+            <section class="check-section" [formGroup]="bodyGroup">
                 <p><mat-checkbox formControlName="upper">Upper</mat-checkbox></p>
                 <p><mat-checkbox formControlName="middle">Middle</mat-checkbox></p>
                 <p><mat-checkbox formControlName="lower">Lower</mat-checkbox></p>
@@ -49,9 +48,9 @@
             </section>
         </mat-card>
 
-        <mat-card>
+        <mat-card class="card">
             <mat-card-title> Location </mat-card-title>
-            <section class="location-section" [formGroup]="locationGroup">
+            <section class="check-section" [formGroup]="locationGroup">
                 <p><mat-checkbox formControlName="farm">Farm</mat-checkbox></p>
                 <p><mat-checkbox formControlName="city">City</mat-checkbox></p>
                 <p><mat-checkbox formControlName="school">School</mat-checkbox></p>
@@ -60,13 +59,15 @@
             </section>
         </mat-card>
 
-        <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button>
+        <!-- <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button> -->
     </div>
+    
+    <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button>
 
+</div>
     <!--  =======================================  GRAPH  ================================================  -->
 
     <div class="output">
         <p>graph chart</p>
     </div>
-    <button onclick="send()">Try it out</button>
 </div>
