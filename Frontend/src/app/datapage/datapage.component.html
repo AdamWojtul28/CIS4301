@@ -7,11 +7,20 @@
     <div>
     <div class="input">
         <mat-card class="card">
-            <mat-card-content>filter? questionable if we implement due to search</mat-card-content>
+            <mat-card-title>Filter</mat-card-title>
+            <mat-form-field class="search-section">
+                <mat-label>Product</mat-label>
+                <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                        {{option.name}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         </mat-card>
 
         <mat-card class="card">
-            <mat-card-title> Age Range of Patients: {{this.ageGroup.get('ageStart')?.value}} - {{this.ageGroup.get('ageEnd')?.value}}</mat-card-title>
+            <mat-card-title> Age Range of Patients: {{this.ageGroup.get('ageStart')?.value}} - {{this.ageGroup.get('ageEnd')?.value}} years</mat-card-title>
             <section class="slide-section" [formGroup]="ageGroup">
                 <mat-slider 
                     class="slidercss"
@@ -26,36 +35,48 @@
         </mat-card>
 
         <mat-card class="card">
-            <mat-card-title> Demographics to consider </mat-card-title>
-              <section class="check-section" [formGroup]="demoGroup">
-                <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
-                <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
-                <p><mat-checkbox formControlName="hispanic">Hispanic</mat-checkbox></p>
-                <p><mat-checkbox formControlName="PI">Pacific Islander</mat-checkbox></p>
+            <mat-card-title> Gender to consider </mat-card-title>
+              <section class="check-section" [formGroup]="sexGroup">
+                <p><mat-checkbox formControlName="male">Male</mat-checkbox></p>
+                <p><mat-checkbox formControlName="female">Female</mat-checkbox></p>
+                <p><mat-checkbox formControlName="other">Other</mat-checkbox></p>
               </section>
         </mat-card>
 
         <mat-card class="card">
-            <mat-card-title> Injured Body Part </mat-card-title>
-            <section class="check-section" [formGroup]="bodyGroup">
-                <p><mat-checkbox formControlName="upper">Upper</mat-checkbox></p>
-                <p><mat-checkbox formControlName="middle">Middle</mat-checkbox></p>
-                <p><mat-checkbox formControlName="lower">Lower</mat-checkbox></p>
-                <p><mat-checkbox formControlName="A">25%</mat-checkbox></p>
-                <p><mat-checkbox formControlName="B">50%</mat-checkbox></p>
-                <p><mat-checkbox formControlName="C">75%</mat-checkbox></p>
-                <p><mat-checkbox formControlName="D">100%</mat-checkbox></p>
-            </section>
+            <mat-card-title> Demographics to consider </mat-card-title>
+              <section class="check-section" [formGroup]="demoGroup">
+                <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
+                <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
+                <p><mat-checkbox formControlName="asian">Asian</mat-checkbox></p>
+                <p><mat-checkbox formControlName="AI">American Indian</mat-checkbox></p>
+                <p><mat-checkbox formControlName="PI">Pacific Islander</mat-checkbox></p>
+                <p><mat-checkbox formControlName="other">Other</mat-checkbox></p>
+              </section>
+        </mat-card>
+
+        <mat-card class="card">
+            <mat-card-title> Disposition of the patient </mat-card-title>
+              <section class="check-section" [formGroup]="demoGroup">
+                <p><mat-checkbox formControlName="TR">Treated and Released</mat-checkbox></p>
+                <p><mat-checkbox formControlName="hospitalized">Hospitalized</mat-checkbox></p>
+                <p><mat-checkbox formControlName="fatality">Fatality</mat-checkbox></p>
+                <p><mat-checkbox formControlName="other">Other</mat-checkbox></p>
+              </section>
         </mat-card>
 
         <mat-card class="card">
             <mat-card-title> Location </mat-card-title>
             <section class="check-section" [formGroup]="locationGroup">
+                <p><mat-checkbox formControlName="home">Home</mat-checkbox></p>
                 <p><mat-checkbox formControlName="farm">Farm</mat-checkbox></p>
+                <p><mat-checkbox formControlName="street">Street</mat-checkbox></p>
+                <p><mat-checkbox formControlName="MH">Mobile Home</mat-checkbox></p>
                 <p><mat-checkbox formControlName="city">City</mat-checkbox></p>
                 <p><mat-checkbox formControlName="school">School</mat-checkbox></p>
                 <p><mat-checkbox formControlName="factory">Factory</mat-checkbox></p>
-                <p><mat-checkbox formControlName="dayCare">Day Care</mat-checkbox></p>
+                <p><mat-checkbox formControlName="sport">Sport</mat-checkbox></p>
+                <p><mat-checkbox formControlName="other">Other</mat-checkbox></p>
             </section>
         </mat-card>
 

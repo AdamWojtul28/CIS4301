@@ -1,7 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-
 import { HttpClient } from '@angular/common/http';
+
+
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
+
+export interface User {
+    name: string;
+}
 
 @Component({
   selector: 'app-datapage',
@@ -9,46 +17,67 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./datapage.component.css']
 })
 export class DatapageComponent {
-  max = 100;
+  max = 120;
   min = 0;
   step = 10;
   thumbLabel = true;
   slideStart = 0;
-  slideEnd = 100;
+  slideEnd = 120;
   postId: string;
+  searchGroup: FormGroup;
+  sexGroup: FormGroup;
   ageGroup: FormGroup;
   demoGroup: FormGroup;
   bodyGroup: FormGroup;
+  dispositionGroup: FormGroup;
   locationGroup: FormGroup;
 
+    myControl = new FormControl<string | User>('');
+    options: User[] = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
+    filteredOptions: Observable<User[]>;
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
-  ngOnInit() {
+    ngOnInit() {
+    this.filteredOptions = this.myControl.valueChanges.pipe(
+        startWith(''),
+        map(value => {
+          const name = typeof value === 'string' ? value : value?.name;
+          return name ? this._filter(name as string) : this.options.slice();
+        }),
+        );   
     this.ageGroup = this._formBuilder.group({
         ageStart: new FormControl(this.slideStart),
         ageEnd: new FormControl(this.slideEnd)
     });
+    this.sexGroup = this._formBuilder.group({
+        male: false,
+        female: false,
+        other: false,
+    }); 
     this.demoGroup = this._formBuilder.group({
         white: false,
         black: false,
-        hispanic: false,
-        PI: false
+        asian: false,
+        AI: false,
+        PI: false,
+        other: false
     });
-    this.bodyGroup = this._formBuilder.group({
-        upper: false,
-        middle: false,
-        lower: false,
-        A: false,
-        B: false,
-        C: false,
-        D: false
+    this.dispositionGroup = this._formBuilder.group({
+        TR: false,
+        hospitalized: false,
+        fatality: false,
+        other: false
     });
     this.locationGroup = this._formBuilder.group({
+        home: false,
         farm: false,
+        street: false,
+        MH: false,
         city: false,
         school: false,
         factory: false,
-        dayCare: false
+        sport: false,
+        other: false
     });
   }
 
@@ -80,5 +109,15 @@ addData(formData: FormData) {
     //formData.append('firstName', this.dataGroup.get('firstName')?.value);
     //formData.append('username', this.dataGroup.get('username')?.value);
     //formData.append('password', this.dataGroup.get('pasword')?.value);
-}
+    }
+    
+    private _filter(name: string): User[] {
+        const filterValue = name.toLowerCase();
+    
+        return this.options.filter(option => option.name.toLowerCase().includes(filterValue));
+    }
+    displayFn(user: User): string {
+        return user && user.name ? user.name : '';
+    }
+    
 }

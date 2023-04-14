@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientModule } from '@angular/common/http';
@@ -51,7 +52,8 @@ import { DatapageComponent } from './datapage/datapage.component';
     MatIconModule,
     MatCardModule,
     MatSliderModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -56,6 +56,11 @@ mat-card-title {
     margin: 10px;
     font-size: medium;
 }
+.search-section {
+    margin-left: 20px;
+    margin-right: 10px;
+    width: 255px;
+}
 .slidercss {
     width: 255px;
     margin-left: 20px;
