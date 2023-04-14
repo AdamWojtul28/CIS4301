@@ -109,6 +109,34 @@ addData(formData: FormData) {
     //formData.append('firstName', this.dataGroup.get('firstName')?.value);
     //formData.append('username', this.dataGroup.get('username')?.value);
     //formData.append('password', this.dataGroup.get('pasword')?.value);
+    
+    
+    /*
+        ageStart: new FormControl(this.slideStart),
+        ageEnd: new FormControl(this.slideEnd)
+        male: false,
+        female: false,
+        other: false,
+        white: false,
+        black: false,
+        asian: false,
+        AI: false,
+        PI: false,
+        other: false
+        TR: false,
+        hospitalized: false,
+        fatality: false,
+        other: false
+        home: false,
+        farm: false,
+        street: false,
+        MH: false,
+        city: false,
+        school: false,
+        factory: false,
+        sport: false,
+        other: false
+    */
     }
     
     private _filter(name: string): User[] {

@@ -25,6 +25,8 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { DatapageComponent } from './datapage/datapage.component';
+import { ResultPageComponent } from './result-page/result-page.component';
+import { QuizComponent } from './quiz/quiz.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { DatapageComponent } from './datapage/datapage.component';
     LoginComponent,
     RegisterComponent,
     LandingPageComponent,
-    DatapageComponent
+    DatapageComponent,
+    ResultPageComponent,
+    QuizComponent
   ],
   imports: [
     BrowserModule,
