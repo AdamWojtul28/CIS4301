@@ -14,7 +14,7 @@ type User struct {
 	Password string `json:"password"`
 }
 
-var Instance *gorm.DB
+var DBInstance *gorm.DB
 var err error
 
 func Connect() {
@@ -28,6 +28,6 @@ func Connect() {
 }
 
 func Migrate() {
-	Instance.AutoMigrate(&User{})
+	DBInstance.AutoMigrate(&User{})
 	log.Println("Database Migration Completed...")
 }
