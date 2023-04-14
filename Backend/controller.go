@@ -202,3 +202,161 @@ func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphFloatValues)
 }
+
+func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var graphDates []entities.GraphDates
+	DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+					FROM "DENNIS.KIM".Patient
+					ORDER BY year`).Scan(&graphDates)
+	// Next do the actual query where the two x vars are stored in a separate struct
+	var graphFloatValues []entities.GraphFloatValues
+	DBInstance.Raw(`SELECT Prod.Title AS product_title, EXTRACT(YEAR FROM T.TreatmentDate) AS x_value, COUNT(*) AS y_value
+					FROM "DENNIS.KIM".Product Prod, 
+						 (SELECT Product1Code, 
+								 TreatmentDate,
+								 CASE 
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+									ELSE 'Winter'
+								 END AS Season
+						  FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
+						  WHERE P.CaseNumber = I.CaseNumber
+								AND Product1Code IN (SELECT Product1Code 
+													 FROM (SELECT Seasonal.Product1Code, Season, SeasonalTotal, OverallTotal, ((SeasonalTotal/OverallTotal) * 100) AS Percentage
+														   FROM (SELECT Product1Code, Season, COUNT(*) AS SeasonalTotal
+																 FROM (SELECT Product1Code, 
+																			  TreatmentDate, 
+																			  P.CaseNumber, 
+																			  CASE 
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+																				ELSE 'Winter'
+																			  END AS Season
+																	   FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
+																	   WHERE P.CaseNumber = I.CaseNumber) 
+																 GROUP BY Product1Code, Season) Seasonal, 
+																(SELECT Product1Code, COUNT(*) AS OverallTotal
+																 FROM "DENNIS.KIM".InjuryInfo
+																 GROUP BY Product1Code) Yearly
+														 WHERE Seasonal.Product1Code = Yearly.Product1Code
+															   AND ((SeasonalTotal/OverallTotal) * 100) > 50
+															   AND Season = 'Summer'
+														ORDER BY OverallTotal DESC
+														) 
+													)
+						) T
+					WHERE T.Product1Code = Prod.Code
+						  AND Season = 'Summer'
+					GROUP BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)
+					ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+							 Prod.Title`).Scan(&graphFloatValues)
+
+	// Concatenate the two structs into one var
+	// Copy the Label, Title, Concatenated x's, and y's into one struct
+	// Send this value
+	//username := r.URL.Query().Get("username")
+	//password := r.URL.Query().Get("password")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphFloatValues)
+}
+
+func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var dualDates []entities.DualDates
+	DBInstance.Raw(`SELECT DISTINCT CASE 
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+										ELSE 'Winter'
+									END AS season, 
+									EXTRACT(YEAR FROM TreatmentDate) AS year
+									FROM "DENNIS.KIM".Patient
+									ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+									 		 CASE
+											 	WHEN Season = 'Winter' THEN 1
+												WHEN Season = 'Spring' THEN 2
+												WHEN Season = 'Summer' THEN 3
+												ELSE 4
+									 		 END;`).Scan(&dualDates)
+	// Next do the actual query where the two x vars are stored in a separate struct
+	var graphDualValues []entities.GraphDualXValues
+	DBInstance.Raw(`SELECT Prod.Title AS product_title, T.Season AS x_value1, EXTRACT(YEAR FROM T.TreatmentDate) AS x_value2, COUNT(*) AS y_value
+					FROM "DENNIS.KIM".Product Prod, 
+						 (SELECT Product1Code, 
+								 TreatmentDate,
+								 CASE 
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+									WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+									ELSE 'Winter'
+								 END AS Season
+						  FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
+						  WHERE P.CaseNumber = I.CaseNumber
+								AND Product1Code IN (SELECT Product1Code 
+													 FROM (SELECT Seasonal.Product1Code, Season, SeasonalTotal, OverallTotal, ((SeasonalTotal/OverallTotal) * 100) AS Percentage
+														   FROM (SELECT Product1Code, Season, COUNT(*) AS SeasonalTotal
+																 FROM (SELECT Product1Code, 
+																			  TreatmentDate, 
+																			  P.CaseNumber, 
+																			  CASE 
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+																				WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+																				ELSE 'Winter'
+																			  END AS Season
+																	   FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
+																	   WHERE P.CaseNumber = I.CaseNumber) 
+																 GROUP BY Product1Code, Season) Seasonal, 
+																(SELECT Product1Code, COUNT(*) AS OverallTotal
+																 FROM "DENNIS.KIM".InjuryInfo
+																 GROUP BY Product1Code) Yearly
+														 WHERE Seasonal.Product1Code = Yearly.Product1Code
+															   AND ((SeasonalTotal/OverallTotal) * 100) > 50
+															   AND OverallTotal > 100
+														ORDER BY OverallTotal DESC
+														) 
+													)
+						) T
+					WHERE T.Product1Code = Prod.Code
+					GROUP BY Prod.Title, Season, EXTRACT(YEAR FROM TreatmentDate)
+					ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+							 CASE
+								WHEN Season = 'Winter' THEN 1
+								WHEN Season = 'Spring' THEN 2
+								WHEN Season = 'Summer' THEN 3
+								ELSE 4
+							 END,
+							 Prod.Title`).Scan(&graphDualValues)
+
+	// Concatenate the two structs into one var
+	// Copy the Label, Title, Concatenated x's, and y's into one struct
+	// Send this value
+	//username := r.URL.Query().Get("username")
+	//password := r.URL.Query().Get("password")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphDualValues)
+}
+
+func TestString(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var graphDates []entities.GraphDates
+	testSQLString := `SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+	FROM "DENNIS.KIM".Patient`
+	testSQLInput := "WHERE year = 2016 OR year = 2017"
+	//combinedString :=
+	DBInstance.Raw(testSQLString, testSQLInput).Scan(&graphDates)
+	// Next do the actual query where the two x vars are stored in a separate struct
+	//username := r.URL.Query().Get("username")
+	//password := r.URL.Query().Get("password")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphDates)
+}
