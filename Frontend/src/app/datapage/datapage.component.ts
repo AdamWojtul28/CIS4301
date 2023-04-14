@@ -38,48 +38,48 @@ export class DatapageComponent {
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
-    this.filteredOptions = this.myControl.valueChanges.pipe(
-        startWith(''),
-        map(value => {
-          const name = typeof value === 'string' ? value : value?.name;
-          return name ? this._filter(name as string) : this.options.slice();
-        }),
+        this.filteredOptions = this.myControl.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+            const name = typeof value === 'string' ? value : value?.name;
+            return name ? this._filter(name as string) : this.options.slice();
+            }),
         );   
-    this.ageGroup = this._formBuilder.group({
-        ageStart: new FormControl(this.slideStart),
-        ageEnd: new FormControl(this.slideEnd)
-    });
-    this.sexGroup = this._formBuilder.group({
-        male: false,
-        female: false,
-        other: false,
-    }); 
-    this.demoGroup = this._formBuilder.group({
-        white: false,
-        black: false,
-        asian: false,
-        AI: false,
-        PI: false,
-        other: false
-    });
-    this.dispositionGroup = this._formBuilder.group({
-        TR: false,
-        hospitalized: false,
-        fatality: false,
-        other: false
-    });
-    this.locationGroup = this._formBuilder.group({
-        home: false,
-        farm: false,
-        street: false,
-        MH: false,
-        city: false,
-        school: false,
-        factory: false,
-        sport: false,
-        other: false
-    });
-  }
+        this.ageGroup = this._formBuilder.group({
+            ageStart: new FormControl(this.slideStart),
+            ageEnd: new FormControl(this.slideEnd)
+        });
+        this.sexGroup = this._formBuilder.group({
+            male: false,
+            female: false,
+            otherSex: false
+        }); 
+        this.demoGroup = this._formBuilder.group({
+            white: false,
+            black: false,
+            asian: false,
+            AI: false,
+            PI: false,
+            otherDemo: false
+        });
+        this.dispositionGroup = this._formBuilder.group({
+            TR: false,
+            hospitalized: false,
+            fatality: false,
+            otherDisp: false
+        });
+        this.locationGroup = this._formBuilder.group({
+            home: false,
+            farm: false,
+            street: false,
+            MH: false,
+            city: false,
+            school: false,
+            factory: false,
+            sport: false,
+            otherLoc: false
+        });
+    }
 
   send() {
   
@@ -116,17 +116,17 @@ addData(formData: FormData) {
         ageEnd: new FormControl(this.slideEnd)
         male: false,
         female: false,
-        other: false,
+        otherSex: false,
         white: false,
         black: false,
         asian: false,
         AI: false,
         PI: false,
-        other: false
+        otherDemo: false
         TR: false,
         hospitalized: false,
         fatality: false,
-        other: false
+        otherDisp: false
         home: false,
         farm: false,
         street: false,
@@ -135,7 +135,7 @@ addData(formData: FormData) {
         school: false,
         factory: false,
         sport: false,
-        other: false
+        otherLoc: false
     */
     }
     
