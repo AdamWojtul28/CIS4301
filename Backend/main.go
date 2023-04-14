@@ -6,8 +6,6 @@ import (
 )
 
 func main() {
-	LoadAppConfig()
-	// Initialize Database
 	Connect()
 	Migrate()
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"net/http/httputil"
 	"os"
 
 	"github.com/gorilla/handlers"
@@ -31,7 +30,6 @@ func httpHandler() http.Handler {
 	router.HandleFunc("/api/users/{id}", DeleteUser).Methods("DELETE")
 
 	// WARNING: this route must be the last route defined.
-	var AngularHandler *httputil.ReverseProxy
 	router.PathPrefix("/").Handler(AngularHandler).Methods("GET")
 
 	/**
