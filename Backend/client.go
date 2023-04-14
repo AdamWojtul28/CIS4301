@@ -18,7 +18,7 @@ var Instance *gorm.DB
 var err error
 
 func Connect() {
-	url := oracle.BuildUrl("oracle.cise.ufl.edu", 1521, "orcl", "username", "password", nil)
+	url := oracle.BuildUrl("oracle.cise.ufl.edu", 1521, "orcl", "evandyson", "Ej9jjZdQODivkAAr2UuTJ5gs", nil)
 	Instance, err = gorm.Open(oracle.Open(url), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
