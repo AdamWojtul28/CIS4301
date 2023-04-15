@@ -613,7 +613,7 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 
 	ageStart := strings.Join(r.Form["ageStart"], "")
 	ageEnd := strings.Join(r.Form["ageEnd"], "")
-	ageString := "WHERE (Age BETWEEN " + ageStart + " AND " + ageEnd + ")"
+	ageString := "AND (Age BETWEEN " + ageStart + " AND " + ageEnd + ")"
 
 	var sexMap = make(map[string]string)
 	sexMap["1"] = strings.Join(r.Form["male"], "")
@@ -654,8 +654,25 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	queryString += generateStringForQuery("DispositionCode", dispositionMap)
 	queryString += generateStringForQuery("LocationCode", locationMap)
 	fmt.Println(queryString)
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(queryString)
+
+	var graphValues []entities.GraphValues
+	//var graphProperValues []entities.GraphProperValues
+	firstThreeClauses := `SELECT Prod.Title AS product_title, EXTRACT(YEAR FROM TreatmentDate) AS x_value, 
+						  	COUNT(*) AS y_value
+						  FROM "DENNIS.KIM".Patient Pat, 
+						    "DENNIS.KIM".InjuryInfo I, 
+						    "DENNIS.KIM".Product Prod
+						  WHERE Pat.CaseNumber = I.CaseNumber
+						     AND I.Product1Code = Prod.Code
+							 AND Title = 'FOOTWEAR' `
+	lastClauses := ` GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
+	ORDER BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title`
+	newCombinedString := firstThreeClauses + queryString + lastClauses
+	DBInstance.Raw(newCombinedString).Scan(&graphValues)
+	w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode("Incorrect password")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphValues)
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {
