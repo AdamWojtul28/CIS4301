@@ -606,11 +606,70 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	//Access the name key - First Approach
+	//Access the age
+	for key, val := range r.Form {
+		fmt.Println(key, val)
+	}
+
 	ageStart := strings.Join(r.Form["ageStart"], "")
-	//Access the name key - Second Approach
 	ageEnd := strings.Join(r.Form["ageEnd"], "")
-	fmt.Println(ageStart, ageEnd)
+	ageString := "WHERE (Age BETWEEN " + ageStart + " AND " + ageEnd + ")"
+
+	var sexMap = make(map[string]string)
+	sexMap["1"] = strings.Join(r.Form["male"], "")
+	sexMap["2"] = strings.Join(r.Form["female"], "")
+	sexMap["3"] = strings.Join(r.Form["otherSex"], "")
+
+	var raceMap = make(map[string]string)
+	raceMap["white"] = strings.Join(r.Form["white"], "")
+	raceMap["black"] = strings.Join(r.Form["black"], "")
+	raceMap["asian"] = strings.Join(r.Form["asian"], "")
+	raceMap["AI"] = strings.Join(r.Form["AI"], "")
+	raceMap["PI"] = strings.Join(r.Form["PI"], "")
+	raceMap["otherDemo"] = strings.Join(r.Form["otherDemo"], "")
+
+	var dispositionMap = make(map[string]string)
+	dispositionMap["TR"] = strings.Join(r.Form["TR"], "")
+	dispositionMap["hospitalized"] = strings.Join(r.Form["hospitalized"], "")
+	dispositionMap["fatality"] = strings.Join(r.Form["fatality"], "")
+	dispositionMap["otherDisp"] = strings.Join(r.Form["otherDisp"], "")
+
+	var locationMap = make(map[string]string)
+	locationMap["home"] = strings.Join(r.Form["home"], "")
+	locationMap["farm"] = strings.Join(r.Form["farm"], "")
+	locationMap["street"] = strings.Join(r.Form["street"], "")
+	locationMap["MH"] = strings.Join(r.Form["MH"], "")
+	locationMap["city"] = strings.Join(r.Form["city"], "")
+	locationMap["school"] = strings.Join(r.Form["school"], "")
+	locationMap["factory"] = strings.Join(r.Form["factory"], "")
+	locationMap["sport"] = strings.Join(r.Form["sport"], "")
+	locationMap["otherLoc"] = strings.Join(r.Form["otherLoc"], "")
+
+	queryString := ageString
+	queryString += generateStringForQuery("Sex", sexMap)
+	queryString += generateStringForQuery("Race", raceMap)
+	queryString += generateStringForQuery("Disposition", dispositionMap)
+	queryString += generateStringForQuery("Location", locationMap)
+	fmt.Println(queryString)
+}
+
+func generateStringForQuery(category string, someMap map[string]string) string {
+	currentString := ""
+	counter := 0
+	for key, val := range someMap {
+		if val == "true" {
+			if counter == 0 {
+				currentString += " AND (" + category + " = " + key
+			} else {
+				currentString += " OR " + category + " = " + key
+			}
+			counter++
+		}
+	}
+	if counter > 0 {
+		currentString += ")"
+	}
+	return currentString
 }
 
 func TestFormParsing1(w http.ResponseWriter, r *http.Request) {
@@ -626,8 +685,37 @@ func TestFormParsing1(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(values.Get("ageStart"))
-	log.Println(values.Get("ageEnd"))
+	ageStart := values.Get("ageStart")
+	ageEnd := values.Get("ageEnd")
+	ageString := "WHERE Age BETWEEN " + ageStart + " AND " + ageEnd
+	fmt.Println(ageString)
+
+	//Product
+	//ageStart
+	//ageEnd
+	//male
+	//female
+	//otherSex
+	//white
+	//black
+	//asian
+	//aI
+	//pI
+	//otherDemo
+	//tR
+	//hospitalized
+	//fatality
+	//otherDisp
+	//home
+	//farm
+	//street
+	//mH
+	//city
+	//school
+	//factory
+	//sport
+	//otherLoc
+	//ageString :=
 
 	//AgeStart := r.FormValue("AgeStart")
 	//AgeEnd := r.FormValue("AgeEnd")
