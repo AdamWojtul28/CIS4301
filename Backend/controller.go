@@ -56,12 +56,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("User Deleted Successfully!")
 }
 
-func getDualValuesIndex(mon string, yr string) uint {
+func getDualValuesIndex(mon string, yr string) int {
 
-	var incrementer uint = 12
-	var index uint = 0
+	var incrementer int = 12
+	var index int = 0
 
-	yearMap := map[string]uint{
+	yearMap := map[string]int{
 		"2016": 0,
 		"2017": 1,
 		"2018": 2,
@@ -70,7 +70,7 @@ func getDualValuesIndex(mon string, yr string) uint {
 		"2021": 5,
 	}
 
-	monthMap := map[string]uint{
+	monthMap := map[string]int{
 		"1":  0,
 		"2":  1,
 		"3":  2,
@@ -91,9 +91,9 @@ func getDualValuesIndex(mon string, yr string) uint {
 
 }
 
-func getYearIndex(yr string) uint {
+func getYearIndex(yr string) int {
 
-	yearMap := map[string]uint{
+	yearMap := map[string]int{
 		"2016": 0,
 		"2017": 1,
 		"2018": 2,
@@ -105,7 +105,7 @@ func getYearIndex(yr string) uint {
 	return yearMap[yr]
 }
 
-func getSeasonalDualValuesIndex(season string, yr string) uint {
+func getSeasonalDualValuesIndex(season string, yr string) int {
 
 	/*
 		Seasonal format
@@ -114,11 +114,11 @@ func getSeasonalDualValuesIndex(season string, yr string) uint {
 		2 - Fall2016	6 - Fall2017	10 - Fall2018	14 - Fall2019	18 - Fall2020	22 - Fall2021
 		3 - Winter2016	7 - Winter2017	11 - Winter2018	15 - Winter2019	19 - Winter2020	23 - Winter2021
 	*/
-	var incrementer uint = 4
-	var index uint = 0
+	var incrementer int = 4
+	var index int = 0
 	// season + (incrementer * year)
 
-	yearMap := map[string]uint{
+	yearMap := map[string]int{
 		"2016": 0,
 		"2017": 1,
 		"2018": 2,
@@ -127,7 +127,7 @@ func getSeasonalDualValuesIndex(season string, yr string) uint {
 		"2021": 5,
 	}
 
-	seasonMap := map[string]uint{
+	seasonMap := map[string]int{
 		"Spring": 0,
 		"Summer": 1,
 		"Fall":   2,
@@ -169,6 +169,7 @@ func convertGraphSeasonalDualValues(graphDualSlice []entities.GraphDualXValues) 
 	}
 	return graphDualProper
 }
+
 func convertGraphSingleValues(graphSlice []entities.GraphValues) []entities.GraphProperValues {
 
 	var graphProper []entities.GraphProperValues
@@ -199,6 +200,22 @@ func convertGraphFloatValues(graphSlice []entities.GraphFloatValues) []entities.
 		graphFloatProper = append(graphFloatProper, tempGraph)
 	}
 	return graphFloatProper
+}
+
+func convertGraphDualValuesYFloat(graphDualSlice []entities.GraphDualXValuesYFloat) []entities.GraphDualProperXValuesYFloat {
+
+	var graphDualProper []entities.GraphDualProperXValuesYFloat
+
+	for _, i := range graphDualSlice {
+		tempGraph := entities.GraphDualProperXValuesYFloat{
+
+			ProductTitle: i.ProductTitle,
+			XValue:       getDualValuesIndex(i.XValue1, i.XValue2),
+			YValue:       i.YValue,
+		}
+		graphDualProper = append(graphDualProper, tempGraph)
+	}
+	return graphDualProper
 }
 
 func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
@@ -501,6 +518,62 @@ func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 	graphDualProper = convertGraphSeasonalDualValues(graphDualValues)
 	json.NewEncoder(w).Encode(graphDualProper)
 	//json.NewEncoder(w).Encode(graphDualValues)
+}
+
+func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var dualDates []entities.DualDates
+	DBInstance.Raw(`SELECT DISTINCT EXTRACT(MONTH FROM TreatmentDate) AS month, 
+						EXTRACT(YEAR FROM TreatmentDate) AS year
+					FROM "DENNIS.KIM".Patient
+					ORDER BY year, month`).Scan(&dualDates)
+	// Next do the actual query where the two x vars are stored in a separate struct
+	var graphDualValues []entities.GraphDualXValuesYFloat
+	var graphDualProper []entities.GraphDualProperXValuesYFloat
+	DBInstance.Raw(`WITH MDHP AS (
+						SELECT
+							prod.title AS product_title,
+							COUNT(*) AS count,
+							EXTRACT(MONTH FROM p.treatmentdate) AS MON,
+							EXTRACT(YEAR FROM p.treatmentdate) AS YR
+						FROM "DENNIS.KIM".patient p
+						JOIN "DENNIS.KIM".injuryinfo i ON i.casenumber = p.casenumber
+						LEFT JOIN "DENNIS.KIM".product prod ON i.product1code = prod.code
+						WHERE product1code = 
+											(
+											SELECT s.product1code
+											FROM 
+												(
+												SELECT 
+													product1code, 
+													COUNT(product1code)
+												FROM "DENNIS.KIM".InjuryInfo
+												WHERE locationcode = 1
+												AND dispositioncode IN (4, 8)
+												GROUP BY product1code
+												ORDER BY COUNT(product1code) DESC
+												FETCH FIRST 1 ROWS ONLY
+												) s
+											)
+						AND i.locationcode = 1
+						AND i.dispositioncode IN (4, 8)
+						GROUP BY prod.title, EXTRACT(MONTH FROM p.treatmentdate), EXTRACT(YEAR FROM p.treatmentdate)
+						ORDER BY YR ASC, MON ASC
+					)
+					
+					SELECT
+						m1.product_title,
+						m1.MON AS x_value1,
+						m1.YR AS x_value2, 
+						((m1.count - m2.count) / m2.count * 100) AS y_value
+					FROM MDHP m1
+					JOIN MDHP m2 ON (m1.YR = m2.YR + 1 AND m1.MON = 1 AND m2.MON = 12) OR (m1.YR = m2.YR AND m1.MON = m2.MON + 1)
+					ORDER BY m1.YR, m1.MON`).Scan(&graphDualValues)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	graphDualProper = convertGraphDualValuesYFloat(graphDualValues)
+	json.NewEncoder(w).Encode(graphDualProper)
 }
 
 func TestString(w http.ResponseWriter, r *http.Request) {
