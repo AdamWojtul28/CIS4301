@@ -3,7 +3,12 @@ package main
 import (
 	"dangerous-product-advisor/entities"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -579,11 +584,13 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 func TestString(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var graphDates []entities.GraphDates
-	testSQLString := `SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
-	FROM "DENNIS.KIM".Patient`
-	testSQLInput := "WHERE year = 2016 OR year = 2017"
-	//combinedString :=
-	DBInstance.Raw(testSQLString, testSQLInput).Scan(&graphDates)
+	testSQLString := `SELECT year FROM(SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+	FROM "DENNIS.KIM".Patient)`
+	testSQLInput := ` WHERE year = 2016 OR year = 2017`
+	testSQLInput1 := " OR year = 2018"
+	combinedString := testSQLString + testSQLInput + testSQLInput1
+	fmt.Println(combinedString)
+	DBInstance.Raw(combinedString).Scan(&graphDates)
 	// Next do the actual query where the two x vars are stored in a separate struct
 	//username := r.URL.Query().Get("username")
 	//password := r.URL.Query().Get("password")
@@ -591,4 +598,94 @@ func TestString(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphDates)
+}
+
+func TestFormParsing(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	//Access the name key - First Approach
+	ageStart := strings.Join(r.Form["ageStart"], "")
+	//Access the name key - Second Approach
+	ageEnd := strings.Join(r.Form["ageEnd"], "")
+	fmt.Println(ageStart, ageEnd)
+}
+
+func TestFormParsing1(w http.ResponseWriter, r *http.Request) {
+	log.Println("Testing")
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	log.Println("r.Body", string(body))
+
+	values, err := url.ParseQuery(string(body))
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(values.Get("ageStart"))
+	log.Println(values.Get("ageEnd"))
+
+	//AgeStart := r.FormValue("AgeStart")
+	//AgeEnd := r.FormValue("AgeEnd")
+	//
+	//fmt.Println("AgeStart,", AgeStart)
+	//fmt.Println("AgeEnd,", AgeEnd)
+
+	//w.Header().Set("Content-Type", "application/json")
+	//var formToParse entities.FormToParse
+	//json.NewDecoder(r.Body).Decode(&formToParse)
+	//// send information to the database (success)
+	//fmt.Println(formToParse.Product)
+	//fmt.Println(formToParse.AgeStart)
+	//fmt.Println(formToParse.AgeEnd)
+	//fmt.Println(formToParse.Male)
+	//fmt.Println(formToParse.Female)
+	//fmt.Println(formToParse.OtherSex)
+	//fmt.Println(formToParse.White)
+	//fmt.Println(formToParse.Black)
+	//fmt.Println(formToParse.Asian)
+	//fmt.Println(formToParse.AI)
+	//fmt.Println(formToParse.PI)
+	//fmt.Println(formToParse.OtherDemo)
+	//fmt.Println(formToParse.TR)
+	//fmt.Println(formToParse.Hospitalized)
+	//fmt.Println(formToParse.Fatality)
+	//fmt.Println(formToParse.OtherDisp)
+	//fmt.Println(formToParse.Home)
+	//fmt.Println(formToParse.Farm)
+	//fmt.Println(formToParse.Street)
+	//fmt.Println(formToParse.MH)
+	//fmt.Println(formToParse.City)
+	//fmt.Println(formToParse.School)
+	//fmt.Println(formToParse.Factory)
+	//fmt.Println(formToParse.OtherLoc)
+}
+
+func YourHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	log.Println("r.Body", string(body))
+	//fmt.Println("GET params were:", r.URL.Query())
+	//
+	//one := r.URL.Query().Get("one")
+	//fmt.Println(one)
+	r.ParseForm()
+	fmt.Println("one=" + r.FormValue("one"))
+	fmt.Println("two=" + r.FormValue("two"))
+	//fmt.Fprintf(w, ("one=" + r.FormValue("one")))
+	//fmt.Fprintf(w, ("two=" + r.FormValue("two")))
+	fmt.Fprintf(w, "Gorilla!\n")
+
+	name := r.Form.Get("one")
+	email := r.Form.Get("two")
+
+	fmt.Fprintf(w, "Name: %s\n", name)
+	fmt.Fprintf(w, "Email: %s\n", email)
 }

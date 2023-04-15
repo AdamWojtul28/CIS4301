@@ -28,6 +28,8 @@ func httpHandler() http.Handler {
 
 	// ** Post Routes ** //
 	router.HandleFunc("/api/users", CreateUser).Methods("POST")
+	router.HandleFunc("/users/sendData", TestFormParsing).Methods("POST")
+	router.HandleFunc("/api/test", YourHandler)
 
 	// ** Put Routes ** //
 	router.HandleFunc("/api/users/{id}", UpdateUser).Methods("PUT")
