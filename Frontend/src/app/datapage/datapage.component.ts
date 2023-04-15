@@ -91,7 +91,7 @@ export class DatapageComponent {
       console.log(this.postId);
     });
 
-      console.log('Age start:', this.ageGroup.get('ageStart')?.value);
+      console.log('Age start: ', this.ageGroup.get('ageStart')?.value);
       console.log('Age end: ', this.ageGroup.get('ageEnd')?.value);
       console.log('White?: ', this.demoGroup.get('white')?.value);
       console.log('Black?: ', this.demoGroup.get('black')?.value);
