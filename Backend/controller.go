@@ -654,6 +654,8 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	queryString += generateStringForQuery("DispositionCode", dispositionMap)
 	queryString += generateStringForQuery("LocationCode", locationMap)
 	fmt.Println(queryString)
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(queryString)
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {
