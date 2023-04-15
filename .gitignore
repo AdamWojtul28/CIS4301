@@ -1,3 +1,4 @@
 .DS_Store
 Backend/client.go
-Backend\dangerous-product-advisor.exe
+Backend/dangerous-product-advisor.exe
+Backend\client.go
