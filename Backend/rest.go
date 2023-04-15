@@ -23,6 +23,7 @@ func httpHandler() http.Handler {
 	router.HandleFunc("/api/fatal-products", FatalProducts).Methods("GET")
 	router.HandleFunc("/api/summertime-sadness", SummertimeSadness).Methods("GET")
 	router.HandleFunc("/api/seasonal-hazards", SeasonalHazards).Methods("GET")
+	router.HandleFunc("/api/MDHP-growth", MostDangersHouseProductRog).Methods("GET")
 	router.HandleFunc("/api/retreival", TestString).Methods("GET")
 
 	// ** Post Routes ** //
