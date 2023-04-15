@@ -6,6 +6,12 @@ type GraphValues struct {
 	YValue       uint   `json:"y_value"`
 }
 
+type GraphProperValues struct {
+	ProductTitle string `json:"product_title"`
+	XValue       uint   `json:"x_value"`
+	YValue       uint   `json:"y_value"`
+}
+
 type GraphFloatValues struct {
 	ProductTitle string  `json:"product_title"`
 	XValue       string  `json:"x_value"`
@@ -22,6 +28,12 @@ type GraphDualXValues struct {
 	ProductTitle string `json:"product_title"`
 	XValue1      string `json:"x_value1"`
 	XValue2      string `json:"x_value2"`
+	YValue       uint   `json:"y_value"`
+}
+
+type GraphDualProperXValues struct {
+	ProductTitle string `json:"product_title"`
+	XValue       uint   `json:"x_value1"`
 	YValue       uint   `json:"y_value"`
 }
 
