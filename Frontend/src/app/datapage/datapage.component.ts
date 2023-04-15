@@ -95,10 +95,6 @@ export class DatapageComponent {
       console.log('Age end: ', this.ageGroup.get('ageEnd')?.value);
       console.log('White?: ', this.demoGroup.get('white')?.value);
       console.log('Black?: ', this.demoGroup.get('black')?.value);
-      console.log('25%:', this.bodyGroup.get('A')?.value);
-      console.log('50%: ', this.bodyGroup.get('B')?.value);
-      console.log('75%: ', this.bodyGroup.get('C')?.value);
-      console.log('100%: ', this.bodyGroup.get('D')?.value);
       console.log('city?: ', this.locationGroup.get('city')?.value);
       console.log('school?: ', this.locationGroup.get('school')?.value);
 
