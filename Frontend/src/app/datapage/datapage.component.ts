@@ -102,37 +102,30 @@ export class DatapageComponent {
   }
   
 addData(formData: FormData) {
-    //formData.append('firstName', this.dataGroup.get('firstName')?.value);
-    //formData.append('username', this.dataGroup.get('username')?.value);
-    //formData.append('password', this.dataGroup.get('pasword')?.value);
-    
-    
-    /*
-        ageStart: new FormControl(this.slideStart),
-        ageEnd: new FormControl(this.slideEnd)
-        male: false,
-        female: false,
-        otherSex: false,
-        white: false,
-        black: false,
-        asian: false,
-        AI: false,
-        PI: false,
-        otherDemo: false
-        TR: false,
-        hospitalized: false,
-        fatality: false,
-        otherDisp: false
-        home: false,
-        farm: false,
-        street: false,
-        MH: false,
-        city: false,
-        school: false,
-        factory: false,
-        sport: false,
-        otherLoc: false
-    */
+    formData.append('ageStart', this.ageGroup.get('ageStart')?.value);
+    formData.append('ageEnd', this.ageGroup.get('ageEnd')?.value);
+    formData.append('male', this.sexGroup.get('male')?.value);
+    formData.append('female', this.sexGroup.get('female')?.value);
+    formData.append('otherSex', this.sexGroup.get('otherSex')?.value);
+    formData.append('white', this.demoGroup.get('white')?.value);
+    formData.append('black', this.demoGroup.get('black')?.value);
+    formData.append('asian', this.demoGroup.get('asian')?.value);
+    formData.append('AI', this.demoGroup.get('AI')?.value);
+    formData.append('PI', this.demoGroup.get('PI')?.value);
+    formData.append('otherDemo', this.demoGroup.get('otherDemo')?.value);
+    formData.append('TR', this.dispositionGroup.get('TR')?.value);
+    formData.append('hospitalized', this.dispositionGroup.get('hospitalized')?.value);
+    formData.append('fatality', this.dispositionGroup.get('fatality')?.value);
+    formData.append('otherDisp', this.dispositionGroup.get('otherDisp')?.value);
+    formData.append('home', this.locationGroup.get('home')?.value);
+    formData.append('farm', this.locationGroup.get('farm')?.value);
+    formData.append('street', this.locationGroup.get('street')?.value);
+    formData.append('MH', this.locationGroup.get('MH')?.value);
+    formData.append('city', this.locationGroup.get('city')?.value);
+    formData.append('school', this.locationGroup.get('school')?.value);
+    formData.append('factory', this.locationGroup.get('factory')?.value);
+    formData.append('sport', this.locationGroup.get('sport')?.value);
+    formData.append('otherLoc', this.locationGroup.get('otherLoc')?.value);
     }
     
     private _filter(name: string): User[] {
