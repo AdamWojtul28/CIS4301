@@ -85,7 +85,7 @@ export class DatapageComponent {
   
     var formData: any=new FormData();
     this.addData(formData);
-    this.http.post('http://localhost:1337/users/sendData', formData)
+    this.http.post('http://localhost:5000/users/sendData', formData)
     .subscribe(data =>{
       this.postId=JSON.stringify(data);
       console.log(this.postId);
