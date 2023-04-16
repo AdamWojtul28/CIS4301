@@ -7,38 +7,23 @@
     <div>
     <div class="input">
 
-        <mat-card class="card">
+        <mat-card class="search-card">
             <mat-card-title>Filter</mat-card-title>
-                <form [formGroup]="inputGroup>
-                    <ng-container *ngIf="options$ | async as options">
-                    <mat-form-field *ngIf="filteredOptions$ | async as filteredOptions">
-                        <input
-                        type="text"
-                        placeholder="Select a Star Wars character"
-                        matInput
-                        [matAutocomplete]="auto"
-                        formControlName="character"
-                        #input
-                        (keyup)="onAutocompleteKeyUp(input.value, options)"
-                        required
-                        />
-                
-                        <mat-error *ngIf="inputGroup.controls.character.errors?.matchRequired">
-                        Please select a character from the list.
-                        </mat-error>
-                
-                        <mat-autocomplete
-                        #auto="matAutocomplete"
-                        autoActiveFirstOption
-                        [displayWith]="getAutoCompleteDisplayValue"
-                        >
-                        <mat-option *ngFor="let option of filteredOptions" [value]="option">
-                            {{ option.name }}
-                        </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                    </ng-container>
-                </form>
+            <mat-form-field class="search-bar">
+                <input type="text" placeholder="Product" matInput 
+                [formControl]="search" [matAutocomplete]="autoLabel">
+                <mat-autocomplete #autoLabel="matAutocomplete">
+                <mat-option *ngFor="let label of filteredOptions | async" [value]="label">
+                   {{label}}
+                 </mat-option>
+               </mat-autocomplete>
+           
+               <mat-error class="error" *ngFor="let validation of validation_msgs.search">
+                 <div *ngIf="search.hasError(validation.type)">
+                   {{validation.message}}
+                 </div>
+               </mat-error>
+            </mat-form-field>
         </mat-card>
 
         <mat-card class="card">
@@ -57,8 +42,8 @@
             <section class="slide-section" [formGroup]="ageGroup">
                 <mat-slider 
                     class="slidercss"
-                    [max]="max"
                     [min]="min"
+                    [max]="max"
                     [step]="step"
                     [discrete]="thumbLabel">
                     <input matSliderStartThumb formControlName="ageStart">
@@ -116,7 +101,7 @@
         <!-- <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button> -->
     </div>
     
-    <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button>
+    <button class="submitButton" mat-raised-button color="primary" [disabled]="search.invalid" (click)="send()">Try it out</button>
 
 </div>
     <!--  =======================================  GRAPH  ================================================  -->

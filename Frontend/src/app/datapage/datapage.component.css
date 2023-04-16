@@ -79,3 +79,13 @@ mat-card-title {
     margin-top: -20px;
     margin-left: 5px;
 }
+.search-card {
+    height: 140px;
+}
+.search-bar {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+.error {
+    margin-top: -19px;
+}

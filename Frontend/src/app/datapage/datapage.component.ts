@@ -1,23 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AbstractControl, ValidatorFn, FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { SwapiService } from './swapi.service';
 
 
-export interface User {
-    name: string;
-}
+function autocompleteStringValidator(validOptions: Array<string>): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (validOptions.indexOf(control.value) !== -1) {
+        return null  /* valid option selected */
+      }
+      return { 'invalidAutocompleteString': { value: control.value } }
+    }
+  }
 
 @Component({
   selector: 'app-datapage',
   templateUrl: './datapage.component.html',
   styleUrls: ['./datapage.component.css']
 })
-export class DatapageComponent {
+export class DatapageComponent implements OnInit {
   max = 120;
   min = 0;
   step = 10;
@@ -34,18 +38,26 @@ export class DatapageComponent {
   locationGroup: FormGroup;
     
   filteredOptions: Observable<string[]>;
-  myControl = new FormControl('');
-  private filteredOptionsSubject = new BehaviorSubject<string[]>([]);
-  options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
+    options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
 
-  constructor(private http: HttpClient, private _formBuilder: FormBuilder, private swapiService: SwapiService) {}
+    public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
+
+    public validation_msgs = {
+        'search': [
+            { type: 'invalidAutocompleteString', message: 'Product not recognized.' },
+            { type: 'required', message: 'Product is required.' }
+        ]
+    };
+
+  constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
-        this.filteredOptions = this.myControl.valueChanges.pipe(
+        this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
-            map(value => this._filter(value || '')),
+            map(value => this._filterLabels(value || '')),
         );
+        
         this.inputGroup = this._formBuilder.group({
-            search: new FormControl('', Validators.required),
+            search: new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] }),
             unit: new FormControl('year')
         });
         this.ageGroup = this._formBuilder.group({
@@ -100,13 +112,13 @@ export class DatapageComponent {
       console.log('city?: ', this.locationGroup.get('city')?.value);
       console.log('school?: ', this.locationGroup.get('school')?.value);
       console.log('Time unit: ', this.inputGroup.get('unit')?.value);
-      console.log('Search: ', this.myControl.value)
+      console.log('Search: ', this.search.value)
 
     window.location.pathname = './data';
   }
   
     addData(formData: FormData) {
-        formData.append('product', this.myControl.value!)
+        formData.append('product', this.search.value!)
         formData.append('unit', this.inputGroup.get('unit')?.value);
         formData.append('ageStart', this.ageGroup.get('ageStart')?.value);
         formData.append('ageEnd', this.ageGroup.get('ageEnd')?.value);
@@ -134,9 +146,11 @@ export class DatapageComponent {
         formData.append('otherLoc', this.locationGroup.get('otherLoc')?.value);
     }
     
-    private _filter(value: string): string[] {
-        const filterValue = value.toLowerCase();
-    
-        return this.options.filter(option => option.toLowerCase().includes(filterValue));
-    }
+    private _filterLabels(label: string): string[] {
+        if (label === '') {
+          return this.options.slice()
+        }
+        const filterValue = label.toLowerCase()
+        return this.options.filter(option => option.toLowerCase().includes(filterValue))
+      }
 }
