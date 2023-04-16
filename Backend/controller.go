@@ -663,24 +663,81 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	queryString += generateStringForQuery("LocationCode", locationMap)
 	fmt.Println(queryString)
 
-	var graphValues []entities.GraphValues
-	//var graphProperValues []entities.GraphProperValues
-	firstThreeClauses := `SELECT Prod.Title AS product_title, EXTRACT(YEAR FROM TreatmentDate) AS x_value, 
-						  	COUNT(*) AS y_value
-						  FROM "DENNIS.KIM".Patient Pat, 
-						    "DENNIS.KIM".InjuryInfo I, 
-						    "DENNIS.KIM".Product Prod
-						  WHERE Pat.CaseNumber = I.CaseNumber
-						     AND I.Product1Code = Prod.Code
-							 AND Title = 'FOOTWEAR' `
-	lastClauses := ` GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
-	ORDER BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title`
-	newCombinedString := firstThreeClauses + queryString + lastClauses
-	DBInstance.Raw(newCombinedString).Scan(&graphValues)
-	w.Header().Set("Content-Type", "application/json")
-	//json.NewEncoder(w).Encode("Incorrect password")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(graphValues)
+	if unit == "year" {
+		var graphValues []entities.GraphValues
+		//var graphProperValues []entities.GraphProperValues
+		firstThreeClauses := `SELECT Prod.Title AS product_title, EXTRACT(YEAR FROM TreatmentDate) AS x_value, 
+								COUNT(*) AS y_value
+							FROM "DENNIS.KIM".Patient Pat, 
+							  "DENNIS.KIM".InjuryInfo I, 
+							  "DENNIS.KIM".Product Prod
+							WHERE Pat.CaseNumber = I.CaseNumber
+							   AND I.Product1Code = Prod.Code
+							   AND Title = 'FOOTWEAR' `
+		lastClauses := ` GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
+		ORDER BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title`
+		newCombinedString := firstThreeClauses + queryString + lastClauses
+		DBInstance.Raw(newCombinedString).Scan(&graphValues)
+		w.Header().Set("Content-Type", "application/json")
+		//json.NewEncoder(w).Encode("Incorrect password")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(graphValues)
+	} else if unit == "month" {
+		var graphDualValues []entities.GraphDualXValues
+		//var graphProperValues []entities.GraphProperValues
+		firstThreeClauses := `SELECT Prod.Title AS product_title, EXTRACT(MONTH FROM TreatmentDate) AS x_value1, EXTRACT(YEAR FROM TreatmentDate) AS x_value2, 
+									COUNT(*) AS y_value
+							  FROM "DENNIS.KIM".Patient Pat,
+								"DENNIS.KIM".InjuryInfo I,
+								"DENNIS.KIM".Product Prod
+							  WHERE Pat.CaseNumber = I.CaseNumber
+								 AND I.Product1Code = Prod.Code
+									 AND Title = 'FOOTWEAR' `
+		lastClauses := ` 
+		GROUP BY EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate), Prod.Title
+        ORDER BY EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate), Prod.Title`
+		newCombinedString := firstThreeClauses + queryString + lastClauses
+		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
+		w.Header().Set("Content-Type", "application/json")
+		//json.NewEncoder(w).Encode("Incorrect password")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(graphDualValues)
+	} else if unit == "season" {
+		var graphDualValues []entities.GraphDualXValues
+		//var graphProperValues []entities.GraphProperValues
+		firstThreeClauses := `SELECT product_title, x_value1, x_value2, COUNT(*) AS y_value
+							  FROM (SELECT Title AS product_title, 
+							  	   CASE 
+							  			WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+							  			WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+							  			WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+							  			ELSE 'Winter'
+							  		END AS x_value1, 
+							  	   EXTRACT(YEAR FROM TreatmentDate) AS x_value2
+							  FROM "DENNIS.KIM".Patient Pat, 
+							  	 "DENNIS.KIM".InjuryInfo I, 
+							  	 "DENNIS.KIM".Product Prod
+							  WHERE Pat.CaseNumber = I.CaseNumber
+							  	  AND I.Product1Code = Prod.Code
+							  	  AND Title = 'FOOTWEAR' `
+		lastClauses := `)
+		GROUP BY product_title, x_value1, x_value2
+		ORDER BY x_value2, 
+				 CASE
+					WHEN x_value1 = 'Winter' THEN 1
+					WHEN x_value1 = 'Spring' THEN 2
+					WHEN x_value1 = 'Summer' THEN 3
+					ELSE 4
+				 END, 
+				 product_title`
+		newCombinedString := firstThreeClauses + queryString + lastClauses
+		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
+		w.Header().Set("Content-Type", "application/json")
+		//json.NewEncoder(w).Encode("Incorrect password")
+		graphDualProper := convertGraphSeasonalDualValues(graphDualValues)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(graphDualProper)
+	}
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {
