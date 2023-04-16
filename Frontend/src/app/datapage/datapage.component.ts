@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, ValidatorFn, FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
-
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-
+import { Chart } from 'chart.js/auto';
 
 function autocompleteStringValidator(validOptions: Array<string>): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -36,9 +34,11 @@ export class DatapageComponent implements OnInit {
   bodyGroup: FormGroup;
   dispositionGroup: FormGroup;
   locationGroup: FormGroup;
-    
   filteredOptions: Observable<string[]>;
     options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
+    
+    public chart: any;
+
 
     public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
 
@@ -51,6 +51,8 @@ export class DatapageComponent implements OnInit {
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
+        this.createChart();
+
         this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
             map(value => this._filterLabels(value || '')),
@@ -149,4 +151,35 @@ export class DatapageComponent implements OnInit {
         const filterValue = label.toLowerCase()
         return this.options.filter(option => option.toLowerCase().includes(filterValue))
     }
+
+    createChart(){
+  
+        this.chart = new Chart("MyChart", {
+          type: 'line', //this denotes tha type of chart
+    
+          data: {// values on X-Axis
+            labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
+                                     '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
+               datasets: [
+              {
+                label: "Sales",
+                data: ['467','576', '572', '79', '92',
+                                     '574', '573', '576'],
+                backgroundColor: 'blue'
+              },
+              {
+                label: "Profit",
+                data: ['542', '542', '536', '327', '17',
+                                         '0.00', '538', '541'],
+                backgroundColor: 'limegreen'
+              }  
+            ]
+          },
+          options: {
+            aspectRatio:2.5
+          }
+          
+        });
+      }
+    
 }

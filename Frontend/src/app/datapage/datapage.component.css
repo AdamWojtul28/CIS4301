@@ -33,10 +33,13 @@
     border-width: medium;
     border-color: black;
 }
+.input-container {
+    width: fit-content;
+}
 .output {
     border: 1px solid brown;
     text-align: center;
-    width: 810px;
+    width: auto;
     height: 650px;
     margin-right: 40px;
     margin-top: 40px;
@@ -45,6 +48,7 @@
     border-color: black;
     border-style: solid;
     border-width: medium;
+    margin-left: -480px;
 }
 
 mat-card {

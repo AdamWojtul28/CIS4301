@@ -1,113 +1,116 @@
 <div class="body">
     <h1>Welcome to the Datapage</h1>
-    <a class="button1" href="#" mat-raised-button color="primary"> Landing page </a>
+    <a class="button1" href="#" mat-raised-button color="primary"> Return to Home </a>
 </div>
 
 <div class="grid-container-element">
-    <div>
-    <div class="input">
+    <div class="input-container">
+        <div class="input">
 
-        <mat-card class="search-card">
-            <mat-card-title>Filter</mat-card-title>
-            <mat-form-field class="search-bar">
-                <input type="text" placeholder="Product" matInput 
-                [formControl]="search" [matAutocomplete]="autoLabel">
-                <mat-autocomplete #autoLabel="matAutocomplete">
-                <mat-option *ngFor="let label of filteredOptions | async" [value]="label">
-                   {{label}}
-                 </mat-option>
-               </mat-autocomplete>
-           
-               <mat-error class="error" *ngFor="let validation of validation_msgs.search">
-                 <div *ngIf="search.hasError(validation.type)">
-                   {{validation.message}}
-                 </div>
-               </mat-error>
-            </mat-form-field>
-        </mat-card>
+            <mat-card class="search-card">
+                <mat-card-title>Filter</mat-card-title>
+                <mat-form-field class="search-bar">
+                    <input type="text" placeholder="Product" matInput 
+                    [formControl]="search" [matAutocomplete]="autoLabel">
+                    <mat-autocomplete #autoLabel="matAutocomplete">
+                    <mat-option *ngFor="let label of filteredOptions | async" [value]="label">
+                    {{label}}
+                    </mat-option>
+                </mat-autocomplete>
+            
+                <mat-error class="error" *ngFor="let validation of validation_msgs.search">
+                    <div *ngIf="search.hasError(validation.type)">
+                    {{validation.message}}
+                    </div>
+                </mat-error>
+                </mat-form-field>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title>Select unit of time</mat-card-title>
-            <section class="check-section" [formGroup]="inputGroup">
-                <mat-radio-group formControlName="unit" aria-label="Select an option">
-                    <mat-radio-button value="month">By Monthly</mat-radio-button>
-                    <mat-radio-button value="season">By Season</mat-radio-button>
-                    <mat-radio-button value="year">By Year</mat-radio-button>
-                </mat-radio-group>              
-            </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title>Select unit of time</mat-card-title>
+                <section class="check-section" [formGroup]="inputGroup">
+                    <mat-radio-group formControlName="unit" aria-label="Select an option">
+                        <mat-radio-button value="month">By Monthly</mat-radio-button>
+                        <mat-radio-button value="season">By Season</mat-radio-button>
+                        <mat-radio-button value="year">By Year</mat-radio-button>
+                    </mat-radio-group>              
+                </section>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title> Age Range of Patients: {{this.ageGroup.get('ageStart')?.value}} - {{this.ageGroup.get('ageEnd')?.value}} years</mat-card-title>
-            <section class="slide-section" [formGroup]="ageGroup">
-                <mat-slider 
-                    class="slidercss"
-                    [min]="min"
-                    [max]="max"
-                    [step]="step"
-                    [discrete]="thumbLabel">
-                    <input matSliderStartThumb formControlName="ageStart">
-                    <input matSliderEndThumb formControlName="ageEnd">
-                </mat-slider>   
-            </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title> Age Range of Patients: {{this.ageGroup.get('ageStart')?.value}} - {{this.ageGroup.get('ageEnd')?.value}} years</mat-card-title>
+                <section class="slide-section" [formGroup]="ageGroup">
+                    <mat-slider 
+                        class="slidercss"
+                        [min]="min"
+                        [max]="max"
+                        [step]="step"
+                        [discrete]="thumbLabel">
+                        <input matSliderStartThumb formControlName="ageStart">
+                        <input matSliderEndThumb formControlName="ageEnd">
+                    </mat-slider>   
+                </section>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title> Gender to consider </mat-card-title>
-              <section class="check-section" [formGroup]="sexGroup">
-                <p><mat-checkbox formControlName="male">Male</mat-checkbox></p>
-                <p><mat-checkbox formControlName="female">Female</mat-checkbox></p>
-                <p><mat-checkbox formControlName="otherSex">Other</mat-checkbox></p>
-              </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title> Gender to consider </mat-card-title>
+                <section class="check-section" [formGroup]="sexGroup">
+                    <p><mat-checkbox formControlName="male">Male</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="female">Female</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="otherSex">Other</mat-checkbox></p>
+                </section>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title> Demographics to consider </mat-card-title>
-              <section class="check-section" [formGroup]="demoGroup">
-                <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
-                <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
-                <p><mat-checkbox formControlName="asian">Asian</mat-checkbox></p>
-                <p><mat-checkbox formControlName="AI">American Indian</mat-checkbox></p>
-                <p><mat-checkbox formControlName="PI">Pacific Islander</mat-checkbox></p>
-                <p><mat-checkbox formControlName="otherDemo">Other</mat-checkbox></p>
-              </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title> Demographics to consider </mat-card-title>
+                <section class="check-section" [formGroup]="demoGroup">
+                    <p><mat-checkbox formControlName="white">White</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="black">Black</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="asian">Asian</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="AI">American Indian</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="PI">Pacific Islander</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="otherDemo">Other</mat-checkbox></p>
+                </section>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title> Disposition of the patient </mat-card-title>
-              <section class="check-section" [formGroup]="dispositionGroup">
-                <p><mat-checkbox formControlName="TR">Treated and Released</mat-checkbox></p>
-                <p><mat-checkbox formControlName="hospitalized">Hospitalized</mat-checkbox></p>
-                <p><mat-checkbox formControlName="fatality">Fatality</mat-checkbox></p>
-                <p><mat-checkbox formControlName="otherDisp">Other</mat-checkbox></p>
-              </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title> Disposition of the patient </mat-card-title>
+                <section class="check-section" [formGroup]="dispositionGroup">
+                    <p><mat-checkbox formControlName="TR">Treated and Released</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="hospitalized">Hospitalized</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="fatality">Fatality</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="otherDisp">Other</mat-checkbox></p>
+                </section>
+            </mat-card>
 
-        <mat-card class="card">
-            <mat-card-title> Location </mat-card-title>
-            <section class="check-section" [formGroup]="locationGroup">
-                <p><mat-checkbox formControlName="home">Home</mat-checkbox></p>
-                <p><mat-checkbox formControlName="farm">Farm</mat-checkbox></p>
-                <p><mat-checkbox formControlName="street">Street</mat-checkbox></p>
-                <p><mat-checkbox formControlName="MH">Mobile Home</mat-checkbox></p>
-                <p><mat-checkbox formControlName="city">City</mat-checkbox></p>
-                <p><mat-checkbox formControlName="school">School</mat-checkbox></p>
-                <p><mat-checkbox formControlName="factory">Factory</mat-checkbox></p>
-                <p><mat-checkbox formControlName="sport">Sport</mat-checkbox></p>
-                <p><mat-checkbox formControlName="otherLoc">Other</mat-checkbox></p>
-            </section>
-        </mat-card>
+            <mat-card class="card">
+                <mat-card-title> Location </mat-card-title>
+                <section class="check-section" [formGroup]="locationGroup">
+                    <p><mat-checkbox formControlName="home">Home</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="farm">Farm</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="street">Street</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="MH">Mobile Home</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="city">City</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="school">School</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="factory">Factory</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="sport">Sport</mat-checkbox></p>
+                    <p><mat-checkbox formControlName="otherLoc">Other</mat-checkbox></p>
+                </section>
+            </mat-card>
 
-        <!-- <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button> -->
-    </div>
+            <!-- <button class="submitButton" mat-raised-button color="primary" (click)="send()">Try it out</button> -->
+        </div>
     
-    <button class="submitButton" mat-raised-button color="primary" [disabled]="search.invalid" (click)="send()">Try it out</button>
+        <button class="submitButton" mat-raised-button color="primary" [disabled]="search.invalid" (click)="send()">Try it out</button>
 
-</div>
+    </div>
     <!--  =======================================  GRAPH  ================================================  -->
 
     <div class="output">
         <p>graph chart</p>
         
+        <div class="chart-container">
+            <canvas  id="MyChart" >{{ chart }}</canvas>
+        </div>      
     </div>
 </div>
