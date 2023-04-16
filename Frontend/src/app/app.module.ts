@@ -18,6 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
+import { MatRadioModule } from '@angular/material/radio';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientModule } from '@angular/common/http';
@@ -57,7 +58,8 @@ import { QuizComponent } from './quiz/quiz.component';
     MatCardModule,
     MatSliderModule,
     MatCheckboxModule,
-    MatAutocompleteModule
+      MatAutocompleteModule,
+      MatRadioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -6,17 +6,50 @@
 <div class="grid-container-element">
     <div>
     <div class="input">
+
         <mat-card class="card">
             <mat-card-title>Filter</mat-card-title>
-            <mat-form-field class="search-section">
-                <mat-label>Product</mat-label>
-                <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                        {{option.name}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
+                <form [formGroup]="inputGroup>
+                    <ng-container *ngIf="options$ | async as options">
+                    <mat-form-field *ngIf="filteredOptions$ | async as filteredOptions">
+                        <input
+                        type="text"
+                        placeholder="Select a Star Wars character"
+                        matInput
+                        [matAutocomplete]="auto"
+                        formControlName="character"
+                        #input
+                        (keyup)="onAutocompleteKeyUp(input.value, options)"
+                        required
+                        />
+                
+                        <mat-error *ngIf="inputGroup.controls.character.errors?.matchRequired">
+                        Please select a character from the list.
+                        </mat-error>
+                
+                        <mat-autocomplete
+                        #auto="matAutocomplete"
+                        autoActiveFirstOption
+                        [displayWith]="getAutoCompleteDisplayValue"
+                        >
+                        <mat-option *ngFor="let option of filteredOptions" [value]="option">
+                            {{ option.name }}
+                        </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </ng-container>
+                </form>
+        </mat-card>
+
+        <mat-card class="card">
+            <mat-card-title>Select unit of time</mat-card-title>
+            <section class="check-section" [formGroup]="inputGroup">
+                <mat-radio-group formControlName="unit" aria-label="Select an option">
+                    <mat-radio-button value="month">By Monthly</mat-radio-button>
+                    <mat-radio-button value="season">By Season</mat-radio-button>
+                    <mat-radio-button value="year">By Year</mat-radio-button>
+                </mat-radio-group>              
+            </section>
         </mat-card>
 
         <mat-card class="card">
