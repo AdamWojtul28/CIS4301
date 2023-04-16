@@ -104,3 +104,6 @@ mat-card-title {
 .error {
     margin-top: -19px;
 }
+.chart-container {
+    padding: 15px;
+}

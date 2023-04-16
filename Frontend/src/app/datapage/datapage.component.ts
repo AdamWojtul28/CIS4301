@@ -308,5 +308,4 @@ export class DatapageComponent implements OnInit {
           });
         */
     }
-    
 }
