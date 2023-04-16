@@ -1,12 +1,25 @@
 .body {
-    margin-top: 50px;
-    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
-.button1 {
-    width: 170px;
+.homeButton {
+    margin-top: 10px;
+    margin-left: 40px;
+}
+.rightGrid {
+    margin-left: -280px;
+}
+.text {
+    font-size: 2.5vw;
+}
+.button {
+    width: 200px;
+    height: 50px;
+    margin-top: 30px;
+    font-size: large;
 }
 .grid-container-element {
-    margin-top: 40px;
+    margin-top: 15px;
     margin-left: 40px;
     margin-right: 40px;
     margin-bottom: 40px;
