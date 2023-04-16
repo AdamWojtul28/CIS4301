@@ -118,7 +118,7 @@ export class DatapageComponent implements OnInit {
   }
   
     addData(formData: FormData) {
-        formData.append('product', this.search.value!)
+        formData.append('product', this.search.value!);
         formData.append('unit', this.inputGroup.get('unit')?.value);
         formData.append('ageStart', this.ageGroup.get('ageStart')?.value);
         formData.append('ageEnd', this.ageGroup.get('ageEnd')?.value);
