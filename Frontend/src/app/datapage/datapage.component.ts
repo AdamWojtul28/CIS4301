@@ -108,8 +108,33 @@ export class DatapageComponent implements OnInit {
         console.log(this.postId);
     });
 
+      // Logging all the values
+
       console.log('Search: ', this.search.value);
       console.log('Time unit: ', this.inputGroup.get('unit')?.value);
+      console.log('Age Start: ', this.ageGroup.get('ageStart')?.value)
+      console.log('Age End: ', this.ageGroup.get('ageEnd')?.value)
+      console.log('Male: ',this.sexGroup.get('male')?.value)
+      console.log('Female: ',this.sexGroup.get('female')?.value)
+      console.log('Other Sex: ',this.sexGroup.get('otherSex')?.value)
+      console.log('White: ',this.demoGroup.get('white')?.value)
+      console.log('Black: ',this.demoGroup.get('black')?.value)
+      console.log('Asian: ',this.demoGroup.get('asian')?.value)
+      console.log('American Indian: ',this.demoGroup.get('AI')?.value)
+      console.log('Pascific Islander: ',this.demoGroup.get('PI')?.value)
+      console.log('Other Race: ',this.demoGroup.get('otherDemo')?.value)
+      console.log('hospitalized: ',this.dispositionGroup.get('hospitalized')?.value)
+      console.log('Fatality: ',this.dispositionGroup.get('fatality')?.value)
+      console.log('Other Disposition: ',this.dispositionGroup.get('otherDisp')?.value)
+      console.log('Home: ',this.locationGroup.get('home')?.value)
+      console.log('Farm: ', this.locationGroup.get('farm')?.value)
+      console.log('Street: ', this.locationGroup.get('street')?.value)
+      console.log('Motor Home: ', this.locationGroup.get('MH')?.value)
+      console.log('City: ', this.locationGroup.get('city')?.value)
+      console.log('School: ', this.locationGroup.get('school')?.value)
+      console.log('Factory: ', this.locationGroup.get('factory')?.value)
+      console.log('Sport: ', this.locationGroup.get('sport')?.value)
+      console.log('Other Location: ', this.locationGroup.get('otherLoc')?.value)
 
     //pause window repathing so that I can test view the console.
     //window.location.pathname = './data';
