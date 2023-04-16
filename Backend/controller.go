@@ -611,22 +611,28 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(key, val)
 	}
 
+	product := " AND Title = " + `'` + strings.Join(r.Form["product"], "") + `' `
+	unit := strings.Join(r.Form["unit"], "")
+
+	fmt.Println(product, unit)
+
 	ageStart := strings.Join(r.Form["ageStart"], "")
 	ageEnd := strings.Join(r.Form["ageEnd"], "")
 	ageString := "AND (Age BETWEEN " + ageStart + " AND " + ageEnd + ")"
 
 	var sexMap = make(map[string]string)
-	sexMap["1"] = strings.Join(r.Form["male"], "")
-	sexMap["2"] = strings.Join(r.Form["female"], "")
-	sexMap["0"] = strings.Join(r.Form["otherSex"], "")
+	sexMap[`'male'`] = strings.Join(r.Form["male"], "")
+	sexMap[`'female'`] = strings.Join(r.Form["female"], "")
+	//sexMap[`'not recorded'`] = strings.Join(r.Form["otherSex"], "")
+	sexMap[`'non-binary/other'`] = strings.Join(r.Form["otherSex"], "")
 
 	var raceMap = make(map[string]string)
-	raceMap["1"] = strings.Join(r.Form["white"], "")
-	raceMap["2"] = strings.Join(r.Form["black"], "")
-	raceMap["4"] = strings.Join(r.Form["asian"], "")
-	raceMap["5"] = strings.Join(r.Form["AI"], "")
-	raceMap["6"] = strings.Join(r.Form["PI"], "")
-	raceMap["3"] = strings.Join(r.Form["otherDemo"], "")
+	raceMap[`'White'`] = strings.Join(r.Form["white"], "")
+	raceMap[`'Black/African American'`] = strings.Join(r.Form["black"], "")
+	raceMap[`'Asian'`] = strings.Join(r.Form["asian"], "")
+	raceMap[`'American Indian/Alaska Native'`] = strings.Join(r.Form["AI"], "")
+	raceMap[`'Native Hawaiian/Pacific Islander'`] = strings.Join(r.Form["PI"], "")
+	raceMap[`'Other'`] = strings.Join(r.Form["otherDemo"], "")
 
 	var dispositionMap = make(map[string]string)
 	dispositionMap["1"] = strings.Join(r.Form["TR"], "")
@@ -640,7 +646,7 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	var locationMap = make(map[string]string)
 	locationMap["1"] = strings.Join(r.Form["home"], "")
 	locationMap["2"] = strings.Join(r.Form["farm"], "")
-	locationMap["3"] = strings.Join(r.Form["street"], "")
+	locationMap["4"] = strings.Join(r.Form["street"], "")
 	locationMap["6"] = strings.Join(r.Form["MH"], "")
 	locationMap["5"] = strings.Join(r.Form["city"], "")
 	locationMap["8"] = strings.Join(r.Form["school"], "")
@@ -649,6 +655,8 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	locationMap["0"] = strings.Join(r.Form["otherLoc"], "")
 
 	queryString := ageString
+	//queryString := product
+	//queryString += ageString
 	queryString += generateStringForQuery("Sex", sexMap)
 	queryString += generateStringForQuery("Race", raceMap)
 	queryString += generateStringForQuery("DispositionCode", dispositionMap)
