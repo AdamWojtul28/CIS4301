@@ -109,6 +109,7 @@ export class DatapageComponent implements OnInit {
       console.log('Search: ', this.search.value);
       console.log('Time unit: ', this.inputGroup.get('unit')?.value);
 
+    //pause window repathing so that I can test view the console.
     //window.location.pathname = './data';
   }
   
