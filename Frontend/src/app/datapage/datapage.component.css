@@ -38,7 +38,7 @@
     margin-left: 40px;
     margin-top: 40px;
     margin-bottom: 40px;
-    width: 350px;
+    width: 370px;
     height: 650px;
     overflow-y: auto;
     background-color: white;
@@ -55,13 +55,13 @@
     width: auto;
     height: 650px;
     margin-right: 40px;
+    margin-left: -470px;
     margin-top: 40px;
     margin-bottom: 40px;
     background-color: white;
     border-color: black;
     border-style: solid;
     border-width: medium;
-    margin-left: -480px;
 }
 
 mat-card {
@@ -81,11 +81,11 @@ mat-card-title {
     margin-left: 20px;
     margin-right: 10px;
 }
-.submitButton {
-    margin-left: 60px;
+.bottomButton {
+    margin-left: 50px;
     margin-top: -15px;
     margin-bottom: 20px;
-    width: 305px;
+    width: 150px;
 }
 .slide-section {
     margin-top: 20px;

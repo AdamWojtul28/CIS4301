@@ -31,14 +31,15 @@ export class DatapageComponent implements OnInit {
   sexGroup: FormGroup;
   ageGroup: FormGroup;
   demoGroup: FormGroup;
-  bodyGroup: FormGroup;
   dispositionGroup: FormGroup;
   locationGroup: FormGroup;
   filteredOptions: Observable<string[]>;
     options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
     
     public chart: any;
-
+    public monthChart: any;
+    public seasonChart: any;
+    public yearChart: any;
 
     public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
 
@@ -98,18 +99,17 @@ export class DatapageComponent implements OnInit {
         });
     }
 
-  send() {
-    var formData: any=new FormData();
-    this.addData(formData);
-    this.http.post('http://localhost:5000/users/sendData', formData)
-    .subscribe(data =>{
-      this.postId=JSON.stringify(data);
-      
-        console.log(this.postId);
+    send() {
+        var formData: any=new FormData();
+        this.addData(formData);
+        this.http.post('http://localhost:5000/users/sendData', formData)
+        .subscribe(data =>{
+          this.postId=JSON.stringify(data);
+        
+            console.log(this.postId);
     });
 
       // Logging all the values
-
       console.log('Search: ', this.search.value);
       console.log('Time unit: ', this.inputGroup.get('unit')?.value);
       console.log('Age Start: ', this.ageGroup.get('ageStart')?.value)
@@ -138,7 +138,7 @@ export class DatapageComponent implements OnInit {
 
     //pause window repathing so that I can test view the console.
     //window.location.pathname = './data';
-  }
+    }
   
     addData(formData: FormData) {
         formData.append('product', this.search.value!);
@@ -177,6 +177,17 @@ export class DatapageComponent implements OnInit {
         return this.options.filter(option => option.toLowerCase().includes(filterValue))
     }
 
+    resetAll() {
+        //this.search.setValue('');
+        this.search.reset();
+        this.inputGroup.reset();
+        this.ageGroup.setValue({ageStart: 0, ageEnd: 120});
+        this.sexGroup.reset();
+        this.demoGroup.reset();
+        this.dispositionGroup.reset();
+        this.locationGroup.reset();
+    }
+
     createChart(){
   
         this.chart = new Chart("MyChart", {
@@ -184,20 +195,29 @@ export class DatapageComponent implements OnInit {
     
           data: {// values on X-Axis
             labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-                                     '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
+                            '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17' ], 
                datasets: [
-              {
-                label: "Sales",
-                data: ['467','576', '572', '79', '92',
-                                     '574', '573', '576'],
-                backgroundColor: 'blue'
-              },
-              {
-                label: "Profit",
-                data: ['542', '542', '536', '327', '17',
-                                         '0.00', '538', '541'],
-                backgroundColor: 'limegreen'
-              }  
+                {
+                    label: "Sales",
+                    data: ['467','576', '572', '79', '92',
+                               '574', '573', '576'],
+                    backgroundColor:'limegreen',
+                    borderColor: 'limegreen'
+                },
+                {
+                    label: "Profit",
+                    data: ['542', '542', '536', '327', '17',
+                                '0.00', '538', '541'],
+                    backgroundColor:'blue',
+                    borderColor: 'blue'
+                },
+                {
+                    label: "Loss",
+                    data: ['300', '500', '400', '200', '600',
+                                '800', '900', '1000'],
+                    backgroundColor:'purple',
+                    borderColor: 'purple'
+                }  
             ]
           },
           options: {
@@ -205,6 +225,88 @@ export class DatapageComponent implements OnInit {
           }
           
         });
-      }
+
+        /*
+        this.monthChart = new Chart("monthChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+              labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
+                                       '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
+                 datasets: [
+                {
+                  label: "Sales",
+                  data: ['467','576', '572', '79', '92',
+                                       '574', '573', '576'],
+                  backgroundColor: 'blue'
+                },
+                {
+                  label: "Profit",
+                  data: ['542', '542', '536', '327', '17',
+                                           '0.00', '538', '541'],
+                  backgroundColor: 'limegreen'
+                }  
+              ]
+            },
+            options: {
+              aspectRatio:2.5
+            }
+            
+        });
+        
+        this.seasonChart = new Chart("seasonChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+              labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
+                                       '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
+                 datasets: [
+                {
+                  label: "Sales",
+                  data: ['467','576', '572', '79', '92',
+                                       '574', '573', '576'],
+                  backgroundColor: 'blue'
+                },
+                {
+                  label: "Profit",
+                  data: ['542', '542', '536', '327', '17',
+                                           '0.00', '538', '541'],
+                  backgroundColor: 'limegreen'
+                }  
+              ]
+            },
+            options: {
+              aspectRatio:2.5
+            }
+            
+        });
+        
+        this.yearChart = new Chart("yearChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+              labels: ['2016', '2017', '2018', '2019', '2020', '2021'], 
+                 datasets: [
+                {
+                  label: "Sales",
+                  data: ['467','576', '572', '79', '92',
+                                       '574', '573', '576'],
+                  backgroundColor: 'blue'
+                },
+                {
+                  label: "Profit",
+                  data: ['542', '542', '536', '327', '17',
+                                           '0.00', '538', '541'],
+                  backgroundColor: 'limegreen'
+                }  
+              ]
+            },
+            options: {
+              aspectRatio:2.5
+            }
+            
+          });
+        */
+    }
     
 }
