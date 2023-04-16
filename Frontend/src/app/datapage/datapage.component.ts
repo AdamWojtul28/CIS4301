@@ -97,24 +97,19 @@ export class DatapageComponent implements OnInit {
     }
 
   send() {
-  
     var formData: any=new FormData();
     this.addData(formData);
     this.http.post('http://localhost:5000/users/sendData', formData)
     .subscribe(data =>{
       this.postId=JSON.stringify(data);
-      console.log(this.postId);
+      
+        console.log(this.postId);
     });
-      console.log('Age start: ', this.ageGroup.get('ageStart')?.value);
-      console.log('Age end: ', this.ageGroup.get('ageEnd')?.value);
-      console.log('White?: ', this.demoGroup.get('white')?.value);
-      console.log('Black?: ', this.demoGroup.get('black')?.value);
-      console.log('city?: ', this.locationGroup.get('city')?.value);
-      console.log('school?: ', this.locationGroup.get('school')?.value);
-      console.log('Time unit: ', this.inputGroup.get('unit')?.value);
-      console.log('Search: ', this.search.value)
 
-    window.location.pathname = './data';
+      console.log('Search: ', this.search.value);
+      console.log('Time unit: ', this.inputGroup.get('unit')?.value);
+
+    //window.location.pathname = './data';
   }
   
     addData(formData: FormData) {
@@ -152,5 +147,5 @@ export class DatapageComponent implements OnInit {
         }
         const filterValue = label.toLowerCase()
         return this.options.filter(option => option.toLowerCase().includes(filterValue))
-      }
+    }
 }
