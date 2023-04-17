@@ -8,14 +8,19 @@ import {map, startWith} from 'rxjs/operators';
 // 2. In console type "npm install chart.js"
 import { Chart } from 'chart.js/auto';
 
-interface Data {
-    product_title: string,
-    x_value: number,
-    y_value: number
+interface coord {
+    x_value: number;
+    y_value: number;
 }
-interface GraphData {
+
+interface ProductStruct {
+    product_title: string;
+    graph_point: coord[];
+}
+
+interface graphData {
     graph_type: number;
-    graph_values: Data[];
+    product_structs: ProductStruct[];
 }
 
 @Component({
@@ -109,32 +114,49 @@ export class DatapageComponent implements OnInit {
         this.addDataToSend(formData);
         this.http.post('http://localhost:5000/users/sendData', formData)
         .subscribe(data =>{
-            this.postId=JSON.stringify(data);
+            //console.log(data);
+
+            //this.postId=JSON.stringify(data);
             //console.log(this.postId);
-            this.graphData = this.parseData(this.postId);
+            //this.graphData = this.parseData(this.postId);
+            //console.log(this.graphData);
+            
+            this.graphData = data;
+            this.graphType = this.graphData.graph_type;
             if (this.graphType == 1)
                 console.log('Yearly');
             else if (this.graphType == 2)
                 console.log('Monthly');
             else if (this.graphType == 3)
                 console.log('Seasonaly');
-             else
+            else
                 console.log('There was an error with the Graph Type number.');
-            console.log('All the data in an array');
-            console.log(this.graphData);
-            console.log('Y values in an array');
-                for (const productTitle in this.graphData) {
-                    if (Object.prototype.hasOwnProperty.call(this.graphData, productTitle)) {
-                        const data = this.graphData[productTitle];
-                        //console.log(productTitle);
-            //NEED TO FIX ADDING THE PRDUCT TITLE       //this.graphLabels[index] = productTitle;
-                                //console.log(this.graphLabels[index]);
-                        const xValues = data.x;
-                        const yValues = data.y;
-                        this.graphY = yValues;
-                        console.log(this.graphY);
-                    }
-                }
+
+            for (let i = 0; i < this.graphData.product_structs.length; i++) {
+              const product = this.graphData.product_structs[i].product_title;
+              //'Product Title: ', this.graphData.product_structs[i].product_title
+              console.log('Product Title: ', product);
+              for (let j = 0; j < this.graphData.product_structs[i].graph_point.length; j++) {
+                const point = this.graphData.product_structs[i].graph_point[j].y_value;
+                //'Y value: ', this.graphData.product_structs[i].graph_point[j].y_value
+                console.log('Y value: ', point);
+              }
+            }
+            // console.log('All the data in an array');
+            // console.log(this.graphData);
+            // console.log('Y values in an array');
+            //     for (const productTitle in this.graphData) {
+            //         if (Object.prototype.hasOwnProperty.call(this.graphData, productTitle)) {
+            //             const data = this.graphData[productTitle];
+            //             //console.log(productTitle);
+            // //NEED TO FIX ADDING THE PRDUCT TITLE       //this.graphLabels[index] = productTitle;
+            //                     //console.log(this.graphLabels[index]);
+            //             const xValues = data.x;
+            //             const yValues = data.y;
+            //             this.graphY = yValues;
+            //             console.log(this.graphY);
+            //         }
+            //     }
         });
 
       // Logging all the values
@@ -171,26 +193,24 @@ export class DatapageComponent implements OnInit {
     }
 
     parseData(dataString: string) {
-        //const trimmedString = dataString.trim();
-        const rawData: GraphData = JSON.parse(dataString);
+      const graphData: graphData = JSON.parse(dataString);
+    
+      //console.log(graphData);
 
-        this.graphType = rawData.graph_type;
-
-        const result: Record<string, { x: number[], y: number[] }> = {};
-
-        rawData.graph_values.forEach((item: Data) => {
-        const { product_title, x_value, y_value } = item;
-        if (result[product_title]) {
-            result[product_title].x.push(x_value);
-            result[product_title].y.push(y_value);
-        } else {
-            result[product_title] = { x: [x_value], y: [y_value] };
-        }
+      this.graphType = graphData.graph_type;
+      const productStructs = graphData.product_structs.map((product: any) => {
+        const productTitle = product.product_title;
+        const graphPoints = product.graph_point.map((point: any) => {
+          const xValue = point.x_value;
+          const yValue = point.y_value;
+          return { x: xValue, y: yValue };
         });
-        
-        return result;
+        return { product_title: productTitle, graph_point: graphPoints };
+      });
+    
+      return { graph_type: this.graphType, product_structs: productStructs };
     }
-  
+
     addDataToSend(formData: FormData) {
         formData.append('product', this.search.value!);
         formData.append('unit', this.inputGroup.get('unit')?.value);
