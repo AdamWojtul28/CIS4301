@@ -286,16 +286,13 @@ export class DatapageComponent implements OnInit {
         this.chart = new Chart("MyChart", {
             type: 'line', //this denotes tha type of chart
       
+
             data: {// values on X-Axis
                 labels: this.yearLabels, 
                 datasets: [
                     {
-                    label: "",
-                        data: [
-                        this.graphData
-                    ],
-                    backgroundColor:'limegreen',
-                    borderColor: 'limegreen'
+                      label: this.graphData.product_structs[0].product_title,
+                      data: [this.graphData.product_structs[0].graph_point[0].y_value],
                     }
                 ]
             },
