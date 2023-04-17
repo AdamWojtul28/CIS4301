@@ -757,7 +757,12 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
 		graphYearlyCustomizable := convertGraphSingleValues(graphValues)
-		fullGraph := graphReady(graphYearlyCustomizable, 6)
+		// First do a query that gives all of the dates in sorted fashion
+		var graphDates []entities.GraphDates
+		DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+						FROM "DENNIS.KIM".Patient
+						ORDER BY year`).Scan(&graphDates)
+		fullGraph := graphReady(graphYearlyCustomizable, len(graphDates))
 		var graphToSend entities.FullGraphwZeroes
 		graphToSend.GraphType = 1
 		graphToSend.ProductWithValues = fullGraph
@@ -773,19 +778,27 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 								"DENNIS.KIM".Product Prod
 							  WHERE Pat.CaseNumber = I.CaseNumber
 								 AND I.Product1Code = Prod.Code
-									 AND Title = 'FOOTWEAR' `
+									 AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
 		lastClauses := ` 
 		GROUP BY EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate), Prod.Title
-        ORDER BY EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate), Prod.Title`
+        ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
 		graphMonthlyCustomizable := convertGraphDualValues(graphDualValues)
+		var dualDates []entities.DualDates
+		DBInstance.Raw(`SELECT DISTINCT EXTRACT(MONTH FROM TreatmentDate) AS month, 
+							EXTRACT(YEAR FROM TreatmentDate) AS year
+						FROM "DENNIS.KIM".Patient
+						ORDER BY year, month`).Scan(&dualDates)
+		fullGraph := graphReady(graphMonthlyCustomizable, len(dualDates))
+		var graphToSend entities.FullGraphwZeroes
+		graphToSend.GraphType = 2
+		graphToSend.ProductWithValues = fullGraph
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphMonthlyCustomizable)
+		json.NewEncoder(w).Encode(graphToSend)
 	} else if unit == "season" {
-		var toSend entities.FullGraph
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
 		firstThreeClauses := `SELECT product_title, x_value1, x_value2, COUNT(*) AS y_value
@@ -802,27 +815,46 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 							  	 "DENNIS.KIM".Product Prod
 							  WHERE Pat.CaseNumber = I.CaseNumber
 							  	  AND I.Product1Code = Prod.Code
-							  	  AND Title = 'FOOTWEAR' `
+							  	  AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
 		lastClauses := `)
 		GROUP BY product_title, x_value1, x_value2
-		ORDER BY x_value2, 
+		ORDER BY product_title, 
+				 x_value2, 
 				 CASE
 					WHEN x_value1 = 'Winter' THEN 1
 					WHEN x_value1 = 'Spring' THEN 2
 					WHEN x_value1 = 'Summer' THEN 3
 					ELSE 4
-				 END, 
-				 product_title`
+				 END`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
 		graphSeasonalCustomizable := convertGraphSeasonalDualValues(graphDualValues)
-		toSend.GraphType = 3
-		toSend.GraphValues = graphSeasonalCustomizable
+		fmt.Println("Length graphSeasonalCustomizable", len(graphSeasonalCustomizable))
+		var dualDates []entities.DualDates
+		DBInstance.Raw(`SELECT DISTINCT CASE 
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+										ELSE 'Winter'
+									END AS season, 
+									EXTRACT(YEAR FROM TreatmentDate) AS year
+									FROM "DENNIS.KIM".Patient
+									ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+									 		 CASE
+											 	WHEN Season = 'Winter' THEN 1
+												WHEN Season = 'Spring' THEN 2
+												WHEN Season = 'Summer' THEN 3
+												ELSE 4
+									 		 END`).Scan(&dualDates)
+		fmt.Println("Length seasons", len(dualDates))
+		fullGraph := graphReady(graphSeasonalCustomizable, len(dualDates))
+		var graphToSend entities.FullGraphwZeroes
+		graphToSend.GraphType = 3
+		graphToSend.ProductWithValues = fullGraph
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		//json.NewEncoder(w).Encode(graphType3)
-		json.NewEncoder(w).Encode(toSend)
-
+		json.NewEncoder(w).Encode(graphToSend)
 	}
 }
 
