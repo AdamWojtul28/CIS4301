@@ -84,3 +84,18 @@ type FullGraph struct {
 	GraphType   int                 `json:"graph_type"`
 	GraphValues []GraphProperValues `json:"graph_values"`
 }
+
+type FullGraphwZeroes struct {
+	GraphType         int                       `json:"graph_type"`
+	ProductWithValues []ProductWithValuesStruct `json:"product_structs"`
+}
+
+type ProductWithValuesStruct struct {
+	ProductTitle string       `json:"product_title"`
+	Points       []GraphPoint `json:"graph_point"`
+}
+
+type GraphPoint struct {
+	XValue int `json:"x_value"`
+	YValue int `json:"y_value"`
+}

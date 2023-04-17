@@ -223,6 +223,82 @@ func convertGraphDualValuesYFloat(graphDualSlice []entities.GraphDualXValuesYFlo
 	return graphDualProper
 }
 
+func graphReady(graphSlice []entities.GraphProperValues, numberXVals int) []entities.ProductWithValuesStruct {
+	currentTitle := graphSlice[0].ProductTitle
+	j := 0
+
+	var allProducts []entities.ProductWithValuesStruct
+	var currentProduct entities.ProductWithValuesStruct
+	currentProduct.ProductTitle = graphSlice[0].ProductTitle
+
+	var graphPoints []entities.GraphPoint
+	var tempGraphPoint entities.GraphPoint
+
+	for i := 0; i < len(graphSlice); i++ {
+		if graphSlice[i].ProductTitle == currentTitle {
+			fmt.Println("Same title", graphSlice[i].ProductTitle)
+			if graphSlice[i].XValue == j {
+				tempGraphPoint.XValue = graphSlice[i].XValue
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				fmt.Println("X value is same as j", tempGraphPoint.XValue, tempGraphPoint.YValue)
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			} else {
+				for j < graphSlice[i].XValue {
+					tempGraphPoint.XValue = j
+					tempGraphPoint.YValue = 0
+					graphPoints = append(graphPoints, tempGraphPoint)
+					j++
+					fmt.Println(j, "j and zero being added", tempGraphPoint.XValue, tempGraphPoint.YValue)
+				}
+				tempGraphPoint.XValue = graphSlice[i].XValue
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+				fmt.Println("X value is same as j", tempGraphPoint.XValue, tempGraphPoint.YValue)
+			}
+		} else {
+			if j >= numberXVals {
+				fmt.Println("Reset j")
+				j = 0
+			} else {
+				for j < numberXVals {
+					tempGraphPoint.XValue = j
+					tempGraphPoint.YValue = 0
+					j++
+					graphPoints = append(graphPoints, tempGraphPoint)
+				}
+			}
+			currentProduct.Points = graphPoints
+			allProducts = append(allProducts, currentProduct)
+			currentTitle = graphSlice[i].ProductTitle
+			currentProduct.ProductTitle = graphSlice[i].ProductTitle
+			currentProduct.Points = nil
+			graphPoints = nil
+			i--
+			j = 0
+		}
+		if i == len(graphSlice)-1 {
+			for j < numberXVals {
+				tempGraphPoint.XValue = j
+				tempGraphPoint.YValue = 0
+				j++
+				graphPoints = append(graphPoints, tempGraphPoint)
+			}
+			currentProduct.Points = graphPoints
+			allProducts = append(allProducts, currentProduct)
+		}
+	}
+	for i := 0; i < len(allProducts); i++ {
+		fmt.Println(allProducts[i].ProductTitle)
+		for j := 0; j < len(allProducts[i].Points); j++ {
+			fmt.Println(allProducts[i].Points[j].XValue, allProducts[i].Points[j].YValue)
+		}
+	}
+
+	return allProducts
+}
+
 func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var graphDates []entities.GraphDates
@@ -673,16 +749,20 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 							  "DENNIS.KIM".Product Prod
 							WHERE Pat.CaseNumber = I.CaseNumber
 							   AND I.Product1Code = Prod.Code
-							   AND Title = 'FOOTWEAR' `
+							   AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
 		lastClauses := ` GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
-		ORDER BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title`
+		ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphValues)
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
 		graphYearlyCustomizable := convertGraphSingleValues(graphValues)
+		fullGraph := graphReady(graphYearlyCustomizable, 6)
+		var graphToSend entities.FullGraphwZeroes
+		graphToSend.GraphType = 1
+		graphToSend.ProductWithValues = fullGraph
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphYearlyCustomizable)
+		json.NewEncoder(w).Encode(graphToSend)
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
