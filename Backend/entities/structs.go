@@ -85,3 +85,8 @@ type FormToParse struct {
 	Sport        bool   `form:"sport"`
 	OtherLoc     bool   `form:"otherLoc"`
 }
+
+type FullGraph struct {
+	GraphType   string                   `json:"graph_type"`
+	GraphValues []GraphDualProperXValues `json:"graph_values"`
+}

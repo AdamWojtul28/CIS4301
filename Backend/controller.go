@@ -680,8 +680,9 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		DBInstance.Raw(newCombinedString).Scan(&graphValues)
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
+		graphYearlyCustomizable := convertGraphSingleValues(graphValues)
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphValues)
+		json.NewEncoder(w).Encode(graphYearlyCustomizable)
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -700,9 +701,11 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
+		graphMonthlyCustomizable := convertGraphDualValues(graphDualValues)
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphDualValues)
+		json.NewEncoder(w).Encode(graphMonthlyCustomizable)
 	} else if unit == "season" {
+		var toSend entities.FullGraph
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
 		firstThreeClauses := `SELECT product_title, x_value1, x_value2, COUNT(*) AS y_value
@@ -732,11 +735,14 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 				 product_title`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
+		graphSeasonalCustomizable := convertGraphSeasonalDualValues(graphDualValues)
+		toSend.GraphType = "3"
+		toSend.GraphValues = graphSeasonalCustomizable
 		w.Header().Set("Content-Type", "application/json")
-		//json.NewEncoder(w).Encode("Incorrect password")
-		graphDualProper := convertGraphSeasonalDualValues(graphDualValues)
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphDualProper)
+		//json.NewEncoder(w).Encode(graphType3)
+		json.NewEncoder(w).Encode(toSend)
+
 	}
 }
 
