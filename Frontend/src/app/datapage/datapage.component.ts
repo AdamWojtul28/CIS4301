@@ -5,14 +5,15 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { Chart } from 'chart.js/auto';
 
-function autocompleteStringValidator(validOptions: Array<string>): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      if (validOptions.indexOf(control.value) !== -1) {
-        return null  /* valid option selected */
-      }
-      return { 'invalidAutocompleteString': { value: control.value } }
-    }
-  }
+interface Data {
+    product_title: string,
+    x_value: number,
+    y_value: number
+}
+interface GraphData {
+    graph_type: number;
+    graph_values: Data[];
+}
 
 @Component({
   selector: 'app-datapage',
@@ -36,10 +37,11 @@ export class DatapageComponent implements OnInit {
   filteredOptions: Observable<string[]>;
     options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
     
+    public MyChart: Chart;
     public chart: any;
-    public monthChart: any;
-    public seasonChart: any;
-    public yearChart: any;
+    public graphData: any;
+    public graphType: number;
+    graphY: any;
 
     public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
 
@@ -101,15 +103,39 @@ export class DatapageComponent implements OnInit {
 
     send() {
         var formData: any=new FormData();
-        this.addData(formData);
+        this.addDataToSend(formData);
         this.http.post('http://localhost:5000/users/sendData', formData)
         .subscribe(data =>{
-          this.postId=JSON.stringify(data);
-        
-            console.log(this.postId);
-    });
+            this.postId=JSON.stringify(data);
+            //console.log(this.postId);
+            this.graphData = this.parseData(this.postId);
+            if (this.graphType == 1)
+                console.log('Yearly');
+            else if (this.graphType == 2)
+                console.log('Monthly');
+            else if (this.graphType == 3)
+                console.log('Seasonaly');
+             else
+                console.log('There was an error with the Graph Type number.');
+            console.log('All the data in an array');
+            console.log(this.graphData);
+            console.log('Y values in an array');
+                for (const productTitle in this.graphData) {
+                    if (Object.prototype.hasOwnProperty.call(this.graphData, productTitle)) {
+                        const data = this.graphData[productTitle];
+                        //console.log(productTitle);
+            //NEED TO FIX ADDING THE PRDUCT TITLE       //this.graphLabels[index] = productTitle;
+                                //console.log(this.graphLabels[index]);
+                        const xValues = data.x;
+                        const yValues = data.y;
+                        this.graphY = yValues;
+                        console.log(this.graphY);
+                    }
+                }
+        });
 
       // Logging all the values
+        /*
       console.log('Search: ', this.search.value);
       console.log('Time unit: ', this.inputGroup.get('unit')?.value);
       console.log('Age Start: ', this.ageGroup.get('ageStart')?.value)
@@ -135,12 +161,34 @@ export class DatapageComponent implements OnInit {
       console.log('Factory: ', this.locationGroup.get('factory')?.value)
       console.log('Sport: ', this.locationGroup.get('sport')?.value)
       console.log('Other Location: ', this.locationGroup.get('otherLoc')?.value)
+      */
 
     //pause window repathing so that I can test view the console.
     //window.location.pathname = './data';
     }
+
+    parseData(dataString: string) {
+        //const trimmedString = dataString.trim();
+        const rawData: GraphData = JSON.parse(dataString);
+
+        this.graphType = rawData.graph_type;
+
+        const result: Record<string, { x: number[], y: number[] }> = {};
+
+        rawData.graph_values.forEach((item: Data) => {
+        const { product_title, x_value, y_value } = item;
+        if (result[product_title]) {
+            result[product_title].x.push(x_value);
+            result[product_title].y.push(y_value);
+        } else {
+            result[product_title] = { x: [x_value], y: [y_value] };
+        }
+        });
+        
+        return result;
+    }
   
-    addData(formData: FormData) {
+    addDataToSend(formData: FormData) {
         formData.append('product', this.search.value!);
         formData.append('unit', this.inputGroup.get('unit')?.value);
         formData.append('ageStart', this.ageGroup.get('ageStart')?.value);
@@ -307,5 +355,14 @@ export class DatapageComponent implements OnInit {
             
           });
         */
+    }
+}
+
+function autocompleteStringValidator(validOptions: Array<string>): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (validOptions.indexOf(control.value) !== -1) {
+        return null  /* valid option selected */
+      }
+      return { 'invalidAutocompleteString': { value: control.value } }
     }
 }
