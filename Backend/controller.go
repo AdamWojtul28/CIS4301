@@ -736,7 +736,7 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
 		graphSeasonalCustomizable := convertGraphSeasonalDualValues(graphDualValues)
-		toSend.GraphType = "3"
+		toSend.GraphType = 3
 		toSend.GraphValues = graphSeasonalCustomizable
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

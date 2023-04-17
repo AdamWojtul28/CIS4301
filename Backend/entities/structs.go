@@ -87,6 +87,6 @@ type FormToParse struct {
 }
 
 type FullGraph struct {
-	GraphType   string                   `json:"graph_type"`
+	GraphType   int                      `json:"graph_type"`
 	GraphValues []GraphDualProperXValues `json:"graph_values"`
 }
