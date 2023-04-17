@@ -207,12 +207,12 @@ func convertGraphFloatValues(graphSlice []entities.GraphFloatValues) []entities.
 	return graphFloatProper
 }
 
-func convertGraphDualValuesYFloat(graphDualSlice []entities.GraphDualXValuesYFloat) []entities.GraphDualProperXValuesYFloat {
+func convertGraphDualValuesYFloat(graphDualSlice []entities.GraphDualXValuesYFloat) []entities.GraphFloatProperValues {
 
-	var graphDualProper []entities.GraphDualProperXValuesYFloat
+	var graphDualProper []entities.GraphFloatProperValues
 
 	for _, i := range graphDualSlice {
-		tempGraph := entities.GraphDualProperXValuesYFloat{
+		tempGraph := entities.GraphFloatProperValues{
 
 			ProductTitle: i.ProductTitle,
 			XValue:       getDualValuesIndex(i.XValue1, i.XValue2),
@@ -233,6 +233,82 @@ func graphReady(graphSlice []entities.GraphProperValues, numberXVals int) []enti
 
 	var graphPoints []entities.GraphPoint
 	var tempGraphPoint entities.GraphPoint
+
+	for i := 0; i < len(graphSlice); i++ {
+		if graphSlice[i].ProductTitle == currentTitle {
+			fmt.Println("Same title", graphSlice[i].ProductTitle)
+			if graphSlice[i].XValue == j {
+				tempGraphPoint.XValue = graphSlice[i].XValue
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				fmt.Println("X value is same as j", tempGraphPoint.XValue, tempGraphPoint.YValue)
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			} else {
+				for j < graphSlice[i].XValue {
+					tempGraphPoint.XValue = j
+					tempGraphPoint.YValue = 0
+					graphPoints = append(graphPoints, tempGraphPoint)
+					j++
+					fmt.Println(j, "j and zero being added", tempGraphPoint.XValue, tempGraphPoint.YValue)
+				}
+				tempGraphPoint.XValue = graphSlice[i].XValue
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+				fmt.Println("X value is same as j", tempGraphPoint.XValue, tempGraphPoint.YValue)
+			}
+		} else {
+			if j >= numberXVals {
+				fmt.Println("Reset j")
+				j = 0
+			} else {
+				for j < numberXVals {
+					tempGraphPoint.XValue = j
+					tempGraphPoint.YValue = 0
+					j++
+					graphPoints = append(graphPoints, tempGraphPoint)
+				}
+			}
+			currentProduct.Points = graphPoints
+			allProducts = append(allProducts, currentProduct)
+			currentTitle = graphSlice[i].ProductTitle
+			currentProduct.ProductTitle = graphSlice[i].ProductTitle
+			currentProduct.Points = nil
+			graphPoints = nil
+			i--
+			j = 0
+		}
+		if i == len(graphSlice)-1 {
+			for j < numberXVals {
+				tempGraphPoint.XValue = j
+				tempGraphPoint.YValue = 0
+				j++
+				graphPoints = append(graphPoints, tempGraphPoint)
+			}
+			currentProduct.Points = graphPoints
+			allProducts = append(allProducts, currentProduct)
+		}
+	}
+	for i := 0; i < len(allProducts); i++ {
+		fmt.Println(allProducts[i].ProductTitle)
+		for j := 0; j < len(allProducts[i].Points); j++ {
+			fmt.Println(allProducts[i].Points[j].XValue, allProducts[i].Points[j].YValue)
+		}
+	}
+
+	return allProducts
+}
+
+func graphReadyFloats(graphSlice []entities.GraphFloatProperValues, numberXVals int) []entities.ProductWithFloatsStruct {
+	currentTitle := graphSlice[0].ProductTitle
+	j := 0
+
+	var allProducts []entities.ProductWithFloatsStruct
+	var currentProduct entities.ProductWithFloatsStruct
+	currentProduct.ProductTitle = graphSlice[0].ProductTitle
+
+	var graphPoints []entities.GraphPointFloatY
+	var tempGraphPoint entities.GraphPointFloatY
 
 	for i := 0; i < len(graphSlice); i++ {
 		if graphSlice[i].ProductTitle == currentTitle {
@@ -324,7 +400,7 @@ func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 													   ORDER BY INCIDENTS DESC)TEMP
 												 FETCH FIRST 25 ROWS ONLY)
 					GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
-					ORDER BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title`).Scan(&graphValues)
+					ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)`).Scan(&graphValues)
 
 	// Concatenate the two structs into one var
 	// Copy the Label, Title, Concatenated x's, and y's into one struct
@@ -332,12 +408,19 @@ func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 	//username := r.URL.Query().Get("username")
 	//password := r.URL.Query().Get("password")
 
+	graphProperValues = convertGraphSingleValues(graphValues)
+	fullGraph := graphReady(graphProperValues, len(graphDates))
+
+	var graphToSend entities.FullGraphwZeroes
+	graphToSend.GraphType = 1
+	graphToSend.ProductWithValues = fullGraph
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphProperValues = convertGraphSingleValues(graphValues)
-	json.NewEncoder(w).Encode(graphProperValues)
-	//json.NewEncoder(w).Encode(graphValues)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -382,7 +465,8 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 					                      (SELECT Product1Code
 					                       FROM TopFiveMonthly
 					                       WHERE Rank > 5)
-					                     )`).Scan(&graphDualValues)
+					                     )
+					ORDER BY Title, Year, Month`).Scan(&graphDualValues)
 
 	// Concatenate the two structs into one var
 	// Copy the Label, Title, Concatenated x's, and y's into one struct
@@ -390,11 +474,19 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	//username := r.URL.Query().Get("username")
 	//password := r.URL.Query().Get("password")
 
+	graphDualProper = convertGraphDualValues(graphDualValues)
+	fullGraph := graphReady(graphDualProper, len(dualDates))
+
+	var graphToSend entities.FullGraphwZeroes
+	graphToSend.GraphType = 2
+	graphToSend.ProductWithValues = fullGraph
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphDualProper = convertGraphDualValues(graphDualValues)
-	json.NewEncoder(w).Encode(graphDualProper)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -439,7 +531,8 @@ func FatalProducts(w http.ResponseWriter, r *http.Request) {
 						 ORDER BY Year) A
 					WHERE A.Product = B.Product
 						  AND B.Year = A.Year
-						  AND Prod.Code = B.Product`).Scan(&graphFloatValues)
+						  AND Prod.Code = B.Product
+					ORDER BY product_title, x_value`).Scan(&graphFloatValues)
 
 	// Concatenate the two structs into one var
 	// Copy the Label, Title, Concatenated x's, and y's into one struct
@@ -447,12 +540,19 @@ func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	//username := r.URL.Query().Get("username")
 	//password := r.URL.Query().Get("password")
 
+	graphProperFloat = convertGraphFloatValues(graphFloatValues)
+	fullGraph := graphReadyFloats(graphProperFloat, len(graphDates))
+
+	var graphToSend entities.FullGraphFloats
+	graphToSend.GraphType = 1
+	graphToSend.ProductWithFloatsStruct = fullGraph
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphProperFloat = convertGraphFloatValues(graphFloatValues)
-	json.NewEncoder(w).Encode(graphProperFloat)
-	//json.NewEncoder(w).Encode(graphFloatValues)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -461,8 +561,8 @@ func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 					FROM "DENNIS.KIM".Patient
 					ORDER BY year`).Scan(&graphDates)
 	// Next do the actual query where the two x vars are stored in a separate struct
-	var graphFloatValues []entities.GraphFloatValues
-	var graphProperFloat []entities.GraphFloatProperValues
+	var graphValues []entities.GraphValues
+	var graphProperValues []entities.GraphProperValues
 	DBInstance.Raw(`SELECT Prod.Title AS product_title, EXTRACT(YEAR FROM T.TreatmentDate) AS x_value, COUNT(*) AS y_value
 					FROM "DENNIS.KIM".Product Prod, 
 						 (SELECT Product1Code, 
@@ -503,26 +603,26 @@ func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 					WHERE T.Product1Code = Prod.Code
 						  AND Season = 'Summer'
 					GROUP BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)
-					ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
-							 Prod.Title`).Scan(&graphFloatValues)
+					ORDER BY Prod.Title,
+					EXTRACT(YEAR FROM TreatmentDate)`).Scan(&graphValues)
 
-	// Concatenate the two structs into one var
-	// Copy the Label, Title, Concatenated x's, and y's into one struct
-	// Send this value
-	//username := r.URL.Query().Get("username")
-	//password := r.URL.Query().Get("password")
+	graphProperValues = convertGraphSingleValues(graphValues)
+	fullGraph := graphReady(graphProperValues, len(graphDates))
+
+	var graphToSend entities.FullGraphwZeroes
+	graphToSend.GraphType = 1
+	graphToSend.ProductWithValues = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphProperFloat = convertGraphFloatValues(graphFloatValues)
-	json.NewEncoder(w).Encode(graphProperFloat)
-	//json.NewEncoder(w).Encode(graphFloatValues)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var dualDates []entities.DualDates
-	var graphDualProper []entities.GraphProperValues
 	DBInstance.Raw(`SELECT DISTINCT CASE 
 										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
 										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
@@ -579,27 +679,28 @@ func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 						) T
 					WHERE T.Product1Code = Prod.Code
 					GROUP BY Prod.Title, Season, EXTRACT(YEAR FROM TreatmentDate)
-					ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+					ORDER BY Prod.Title,
+							 EXTRACT(YEAR FROM TreatmentDate), 
 							 CASE
 								WHEN Season = 'Winter' THEN 1
 								WHEN Season = 'Spring' THEN 2
 								WHEN Season = 'Summer' THEN 3
 								ELSE 4
-							 END,
-							 Prod.Title`).Scan(&graphDualValues)
+							 END`).Scan(&graphDualValues)
 
-	// Concatenate the two structs into one var
-	// Copy the Label, Title, Concatenated x's, and y's into one struct
-	// Send this value
-	//username := r.URL.Query().Get("username")
-	//password := r.URL.Query().Get("password")
+	graphDualProper := convertGraphSeasonalDualValues(graphDualValues)
+	fullGraph := graphReady(graphDualProper, len(dualDates))
+
+	var graphToSend entities.FullGraphwZeroes
+	graphToSend.GraphType = 3
+	graphToSend.ProductWithValues = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphDualProper = convertGraphSeasonalDualValues(graphDualValues)
-	json.NewEncoder(w).Encode(graphDualProper)
-	//json.NewEncoder(w).Encode(graphDualValues)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -610,7 +711,7 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 					ORDER BY year, month`).Scan(&dualDates)
 	// Next do the actual query where the two x vars are stored in a separate struct
 	var graphDualValues []entities.GraphDualXValuesYFloat
-	var graphDualProper []entities.GraphDualProperXValuesYFloat
+	var graphDualProper []entities.GraphFloatProperValues
 	DBInstance.Raw(`WITH MDHP AS (
 						SELECT
 							prod.title AS product_title,
@@ -651,11 +752,19 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 					JOIN MDHP m2 ON (m1.YR = m2.YR + 1 AND m1.MON = 1 AND m2.MON = 12) OR (m1.YR = m2.YR AND m1.MON = m2.MON + 1)
 					ORDER BY m1.YR, m1.MON`).Scan(&graphDualValues)
 
+	graphDualProper = convertGraphDualValuesYFloat(graphDualValues)
+	fullGraph := graphReadyFloats(graphDualProper, len(dualDates))
+
+	var graphToSend entities.FullGraphFloats
+	graphToSend.GraphType = 2
+	graphToSend.ProductWithFloatsStruct = fullGraph
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	graphDualProper = convertGraphDualValuesYFloat(graphDualValues)
-	json.NewEncoder(w).Encode(graphDualProper)
+	json.NewEncoder(w).Encode(graphToSend)
 }
+
+// ^ Done
 
 func TestString(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -676,7 +785,7 @@ func TestString(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphDates)
 }
 
-func TestFormParsing(w http.ResponseWriter, r *http.Request) {
+func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -739,6 +848,7 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 	queryString += generateStringForQuery("LocationCode", locationMap)
 	fmt.Println(queryString)
 
+	var graphToSend entities.FullGraphwZeroes
 	if unit == "year" {
 		var graphValues []entities.GraphValues
 		//var graphProperValues []entities.GraphProperValues
@@ -754,7 +864,6 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 		ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphValues)
-		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
 		graphYearlyCustomizable := convertGraphSingleValues(graphValues)
 		// First do a query that gives all of the dates in sorted fashion
@@ -763,11 +872,8 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 						FROM "DENNIS.KIM".Patient
 						ORDER BY year`).Scan(&graphDates)
 		fullGraph := graphReady(graphYearlyCustomizable, len(graphDates))
-		var graphToSend entities.FullGraphwZeroes
 		graphToSend.GraphType = 1
 		graphToSend.ProductWithValues = fullGraph
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphToSend)
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -784,7 +890,6 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
         ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
-		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode("Incorrect password")
 		graphMonthlyCustomizable := convertGraphDualValues(graphDualValues)
 		var dualDates []entities.DualDates
@@ -793,11 +898,8 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 						FROM "DENNIS.KIM".Patient
 						ORDER BY year, month`).Scan(&dualDates)
 		fullGraph := graphReady(graphMonthlyCustomizable, len(dualDates))
-		var graphToSend entities.FullGraphwZeroes
 		graphToSend.GraphType = 2
 		graphToSend.ProductWithValues = fullGraph
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(graphToSend)
 	} else if unit == "season" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -848,14 +950,12 @@ func TestFormParsing(w http.ResponseWriter, r *http.Request) {
 									 		 END`).Scan(&dualDates)
 		fmt.Println("Length seasons", len(dualDates))
 		fullGraph := graphReady(graphSeasonalCustomizable, len(dualDates))
-		var graphToSend entities.FullGraphwZeroes
 		graphToSend.GraphType = 3
 		graphToSend.ProductWithValues = fullGraph
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		//json.NewEncoder(w).Encode(graphType3)
-		json.NewEncoder(w).Encode(graphToSend)
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphToSend)
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {
@@ -981,4 +1081,42 @@ func YourHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "Name: %s\n", name)
 	fmt.Fprintf(w, "Email: %s\n", email)
+}
+
+func AllCasesOfProductInjury(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var graphDates []entities.GraphDates
+	DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+					FROM "DENNIS.KIM".Patient
+					ORDER BY year`).Scan(&graphDates)
+
+	// Next do the actual query where the two x vars are stored in a separate struct
+	var graphValues []entities.GraphValues
+	var graphProperValues []entities.GraphProperValues
+	DBInstance.Raw(`SELECT DISTINCT CASE 
+							WHEN y_value > 0 THEN 'All Products'
+							ELSE 'Ignore'
+						END AS product_title,
+						x_value,
+						y_value
+					FROM (SELECT EXTRACT(YEAR FROM TreatmentDate) AS x_value, COUNT(*) AS y_value
+						  FROM "DENNIS.KIM".Patient Pat,
+						     "DENNIS.KIM".InjuryInfo I,
+						     "DENNIS.KIM".Product Prod
+						  WHERE Pat.CaseNumber = I.CaseNumber
+						  	AND I.Product1Code = Prod.Code
+						  GROUP BY EXTRACT(YEAR FROM TreatmentDate)
+						  )
+					ORDER BY x_value`).Scan(&graphValues)
+
+	graphProperValues = convertGraphSingleValues(graphValues)
+	fullGraph := graphReady(graphProperValues, len(graphDates))
+
+	var graphToSend entities.FullGraphwZeroes
+	graphToSend.GraphType = 1
+	graphToSend.ProductWithValues = fullGraph
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphToSend)
 }
