@@ -51,6 +51,21 @@ export class DatapageComponent implements OnInit {
     public graphType: number;
     graphY: any;
 
+    yearLabels: string[] = ['2016', '2017', '2018', '2019', '2020', '2021'];
+    monthLabels: string[] = ['Jan 2016', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                             'Jan 2017', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                             'Jan 2018', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                             'Jan 2019', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                             'Jan 2020', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                             'Jan 2021', 'Feb', 'Mar', 'Apr', 'May','June','July','Aug','Sept','Oct','Nov','Dec',];
+    seasonLabels: string[] = ['Winter 2016', 'Spring', 'Summer', 'Fall',
+                              'Winter 2017', 'Spring', 'Summer', 'Fall',
+                              'Winter 2018', 'Spring', 'Summer', 'Fall',
+                              'Winter 2019', 'Spring', 'Summer', 'Fall',
+                              'Winter 2020', 'Spring', 'Summer', 'Fall',
+                              'Winter 2021', 'Spring', 'Summer', 'Fall',];
+
+
     public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
 
     public validation_msgs = {
@@ -62,7 +77,7 @@ export class DatapageComponent implements OnInit {
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
-        this.createChart();
+        //this.createChart();
 
         this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
@@ -157,6 +172,8 @@ export class DatapageComponent implements OnInit {
             //             console.log(this.graphY);
             //         }
             //     }
+            this.createChart(this.graphData);
+
         });
 
       // Logging all the values
@@ -259,8 +276,84 @@ export class DatapageComponent implements OnInit {
         this.locationGroup.reset();
     }
 
-    createChart(){
-  
+    createChart(graphData: any){
+      let chartStatus = Chart.getChart("MyChart"); // <canvas> id
+      if (chartStatus != undefined) {
+        chartStatus.destroy();
+      }
+
+      if (this.graphType == 1) {
+        this.chart = new Chart("MyChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+                labels: this.yearLabels, 
+                datasets: [
+                    {
+                    label: "",
+                        data: [
+                        this.graphData
+                    ],
+                    backgroundColor:'limegreen',
+                    borderColor: 'limegreen'
+                    }
+                ]
+            },
+            options: {
+                aspectRatio:2.5
+            }
+            
+        });
+    }
+        // MONTHLY GRAPH
+    else if (this.graphType == 2) {
+        this.chart = new Chart("MyChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+                labels: this.monthLabels, 
+                 datasets: [
+                  {
+                      label: "",
+                      data: [],
+                      backgroundColor:'limegreen',
+                      borderColor: 'limegreen'
+                  }
+              ]
+            },
+            options: {
+              aspectRatio:2.5
+            }
+            
+        });
+    }
+        // SEASONAL GRAPH
+    else if (this.graphType == 3) {
+        this.chart = new Chart("MyChart", {
+            type: 'line', //this denotes tha type of chart
+      
+            data: {// values on X-Axis
+                labels: this.seasonLabels, 
+                 datasets: [
+                  {
+                      label: "",
+                      data: [],
+                      backgroundColor:'limegreen',
+                      borderColor: 'limegreen'
+                  }
+              ]
+            },
+            options: {
+              aspectRatio:2.5
+            }
+            
+        });
+    }
+    else {
+        console.log('There was an error detecting the graph type number.');
+    }
+
+/*
         this.chart = new Chart("MyChart", {
           type: 'line', //this denotes tha type of chart
     
@@ -295,8 +388,9 @@ export class DatapageComponent implements OnInit {
             aspectRatio:2.5
           }
           
+          
         });
-
+        */
         /*
         this.monthChart = new Chart("monthChart", {
             type: 'line', //this denotes tha type of chart
