@@ -3,6 +3,9 @@ import { AbstractControl, ValidatorFn, FormControl, FormGroup, FormBuilder, Vali
 import { HttpClient } from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+// Follow these steps if you have a "Cannot find module 'chart.js/auto'" error
+// 1. go to "Frontend" folder
+// 2. In console type "npm install chart.js"
 import { Chart } from 'chart.js/auto';
 
 interface Data {
