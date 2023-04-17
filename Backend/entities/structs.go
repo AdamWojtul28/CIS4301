@@ -31,12 +31,6 @@ type GraphDualXValues struct {
 	YValue       int    `json:"y_value"`
 }
 
-type GraphDualProperXValues struct {
-	ProductTitle string `json:"product_title"`
-	XValue       int    `json:"x_value"`
-	YValue       int    `json:"y_value"`
-}
-
 type GraphDualXValuesYFloat struct {
 	ProductTitle string  `json:"product_title"`
 	XValue1      string  `json:"x_value1"`
@@ -87,6 +81,6 @@ type FormToParse struct {
 }
 
 type FullGraph struct {
-	GraphType   int                      `json:"graph_type"`
-	GraphValues []GraphDualProperXValues `json:"graph_values"`
+	GraphType   int                 `json:"graph_type"`
+	GraphValues []GraphProperValues `json:"graph_values"`
 }
