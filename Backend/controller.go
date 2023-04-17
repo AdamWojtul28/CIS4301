@@ -143,12 +143,12 @@ func getSeasonalDualValuesIndex(season string, yr string) int {
 	return index
 
 }
-func convertGraphDualValues(graphDualSlice []entities.GraphDualXValues) []entities.GraphDualProperXValues {
+func convertGraphDualValues(graphDualSlice []entities.GraphDualXValues) []entities.GraphProperValues {
 
-	var graphDualProper []entities.GraphDualProperXValues
+	var graphDualProper []entities.GraphProperValues
 
 	for _, i := range graphDualSlice {
-		tempGraph := entities.GraphDualProperXValues{
+		tempGraph := entities.GraphProperValues{
 
 			ProductTitle: i.ProductTitle,
 			XValue:       getDualValuesIndex(i.XValue1, i.XValue2),
@@ -159,12 +159,12 @@ func convertGraphDualValues(graphDualSlice []entities.GraphDualXValues) []entiti
 	return graphDualProper
 }
 
-func convertGraphSeasonalDualValues(graphDualSlice []entities.GraphDualXValues) []entities.GraphDualProperXValues {
+func convertGraphSeasonalDualValues(graphDualSlice []entities.GraphDualXValues) []entities.GraphProperValues {
 
-	var graphDualProper []entities.GraphDualProperXValues
+	var graphDualProper []entities.GraphProperValues
 
 	for _, i := range graphDualSlice {
-		tempGraph := entities.GraphDualProperXValues{
+		tempGraph := entities.GraphProperValues{
 
 			ProductTitle: i.ProductTitle,
 			XValue:       getSeasonalDualValuesIndex(i.XValue1, i.XValue2),
@@ -272,7 +272,7 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 					ORDER BY year, month`).Scan(&dualDates)
 	// Next do the actual query where the two x vars are stored in a separate struct
 	var graphDualValues []entities.GraphDualXValues
-	var graphDualProper []entities.GraphDualProperXValues
+	var graphDualProper []entities.GraphProperValues
 	DBInstance.Raw(`WITH TopFiveMonthly(Product1Code, Month, Year, Incidents, Rank) AS
 					    (SELECT C.Product1Code, 
 					            EXTRACT(MONTH FROM TreatmentDate) AS Month, 
@@ -446,7 +446,7 @@ func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var dualDates []entities.DualDates
-	var graphDualProper []entities.GraphDualProperXValues
+	var graphDualProper []entities.GraphProperValues
 	DBInstance.Raw(`SELECT DISTINCT CASE 
 										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
 										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
