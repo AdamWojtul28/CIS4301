@@ -25,10 +25,11 @@ func httpHandler() http.Handler {
 	router.HandleFunc("/api/seasonal-hazards", SeasonalHazards).Methods("GET")
 	router.HandleFunc("/api/MDHP-growth", MostDangersHouseProductRog).Methods("GET")
 	router.HandleFunc("/api/retreival", TestString).Methods("GET")
+	router.HandleFunc("/api/count-total", AllCasesOfProductInjury).Methods("GET")
 
 	// ** Post Routes ** //
 	router.HandleFunc("/api/users", CreateUser).Methods("POST")
-	router.HandleFunc("/users/sendData", TestFormParsing).Methods("POST")
+	router.HandleFunc("/users/sendData", CustomQueryMaker).Methods("POST")
 	router.HandleFunc("/api/test", YourHandler)
 
 	// ** Put Routes ** //

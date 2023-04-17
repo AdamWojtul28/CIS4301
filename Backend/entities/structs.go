@@ -99,3 +99,18 @@ type GraphPoint struct {
 	XValue int `json:"x_value"`
 	YValue int `json:"y_value"`
 }
+
+type FullGraphFloats struct {
+	GraphType               int                       `json:"graph_type"`
+	ProductWithFloatsStruct []ProductWithFloatsStruct `json:"product_structs"`
+}
+
+type ProductWithFloatsStruct struct {
+	ProductTitle string             `json:"product_title"`
+	Points       []GraphPointFloatY `json:"graph_point"`
+}
+
+type GraphPointFloatY struct {
+	XValue int     `json:"x_value"`
+	YValue float64 `json:"y_value"`
+}
