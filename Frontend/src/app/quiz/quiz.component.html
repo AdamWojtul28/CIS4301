@@ -1,3 +1,28 @@
-<p>quiz works!</p>
+<link rel="stylesheet" href="./quiz.component.css">
 
-<app-result-page></app-result-page>
+<div class="quiz-container">
+  <div class="quiz-question">
+    <h2>Question {{ currentQuestionNumber + 1 }}</h2>
+    <p>{{ getCurrentQuestion().question }}</p>
+  </div>
+
+  <div class="quiz-answers">
+    <div *ngFor="let answer of getCurrentQuestion().answers; let i = index"
+         [ngClass]="{'selected': selectedAnswerIndex === i, 'correct': selectedAnswerIndex === i && i === getCurrentQuestion().correctAnswerIndex, 'incorrect': selectedAnswerIndex === i && i !== getCurrentQuestion().correctAnswerIndex}"
+         (click)="checkAnswer(i)" class="answer">
+      {{ answer }}
+    </div>
+  </div>
+
+  <div class="quiz-nav">
+    <button (click)="goToPreviousQuestion()" [disabled]="currentQuestionNumber === 0">Previous</button>
+    <button (click)="goToNextQuestion()" [disabled]="currentQuestionNumber === questions.length - 1">Next</button>
+  </div>
+
+  <div class="popup">
+    <div class="chart-container">
+      <canvas  id="MyChart" >{{ chart }}</canvas>
+    </div> 
+  </div>
+
+</div>

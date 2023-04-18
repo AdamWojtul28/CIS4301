@@ -36,6 +36,7 @@ import { Explore4Component } from './explore4/explore4.component';
 import { Explore5Component } from './explore5/explore5.component';
 import { Explore6Component } from './explore6/explore6.component';
 import { Explore7Component } from './explore7/explore7.component';
+import { MatDialogModule } from '@angular/material/dialog'
 
 @NgModule({
   declarations: [
@@ -74,8 +75,9 @@ import { Explore7Component } from './explore7/explore7.component';
     MatCardModule,
     MatSliderModule,
     MatCheckboxModule,
-      MatAutocompleteModule,
-      MatRadioModule
+    MatAutocompleteModule,
+    MatRadioModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

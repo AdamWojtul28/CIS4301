@@ -1,0 +1,104 @@
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to bottom right, #1e1e1e, #4d4d4d);
+    color: #fff;
+    font-family: Arial, sans-serif;
+  }
+  
+  .quiz-question {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .quiz-answers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .answer {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin: 10px;
+    padding: 15px 20px;
+    background: linear-gradient(to bottom, #2c3e50, #34495e);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .answer:hover {
+    background: linear-gradient(to bottom, #1abc9c, #16a085);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .answer.correct {
+    background: linear-gradient(to bottom, #27ae60, #2ecc71);
+  }
+  
+  .answer.incorrect {
+    background: linear-gradient(to bottom, #c0392b, #e74c3c);
+    color: #fff;
+  }
+  
+  .answer.incorrect.selected {
+    background: linear-gradient(to bottom, #c0392b, #e74c3c);
+  }
+  .quiz-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .quiz-nav button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .quiz-nav button:hover {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .quiz-nav button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .chart-container {
+    background: none no-repeat scroll 0 0 #fff;
+    position: relative;
+  }
+
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 9999; /* set z-index to a high number */
+  }
