@@ -1277,8 +1277,6 @@ func AllProductTitles(w http.ResponseWriter, r *http.Request) {
 
 func Test(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
-	r.ParseForm()
-	for key, value := range r.Form {
-		fmt.Printf("%s = %s\n", key, value)
-	}
+	number := r.URL.Query().Get("query")
+	fmt.Println(number)
 }
