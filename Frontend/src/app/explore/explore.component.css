@@ -1,6 +1,6 @@
 body {
     background: linear-gradient(to bottom right, #1e1e1e, #4d4d4d);
-    max-height: max-content;
+    height: 100%;
 }
 mat-card {
     border-color: gray;
@@ -10,6 +10,14 @@ mat-card {
     margin-bottom: 0.8%;
     margin-right: 0.8%;
 }
+.lastCard {
+    border-color: gray;
+    border-radius: 5px;
+    border-width: 3px;
+    margin-left: 0.8%;
+    margin-bottom: 0.3%;
+    margin-right: 0.8%;
+}
 mat-card-header {
     font-size: 2.7vh;
 }
@@ -17,4 +25,22 @@ mat-card-content {
     font-size: 2vh;
     margin-left: 32%;
     margin-top: 3px;
+}
+.button1 {
+    margin: 25px;
+    left: 25vh;
+    padding: 25px 55px;
+    font-size: 1.8vh;
+}
+.button2 {
+    margin: 25px;
+    left: 50vh;
+    padding: 25px 55px;
+    font-size: 1.8vh;
+}
+.button3 {
+    margin: 25px;
+    left: 75vh;
+    padding: 25px 55px;
+    font-size: 1.8vh;
 }
