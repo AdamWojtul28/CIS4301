@@ -120,6 +120,7 @@
         <div class="chart-container">
             <canvas id="MyChart" >{{ chart }}</canvas>
         </div>
+        <p class="warningMessage" *ngIf="show.dataCheck">The input determined that there were no injuries with that specific combination of data.</p>
     </div>
 </div>
 </div>
