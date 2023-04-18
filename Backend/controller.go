@@ -887,6 +887,74 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphToSend)
 }
 
+func DangerTwentyFourSeven(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var dualDates []entities.DualDates
+	DBInstance.Raw(`SELECT DISTINCT EXTRACT(MONTH FROM TreatmentDate) AS month, 
+						EXTRACT(YEAR FROM TreatmentDate) AS year
+					FROM "DENNIS.KIM".Patient
+					ORDER BY year, month`).Scan(&dualDates)
+	// Next do the actual query where the two x vars are stored in a separate struct
+	var graphDualValues []entities.GraphDualXValues
+	var graphDualProper []entities.GraphProperValues
+	DBInstance.Raw(`WITH UserDate(Title,TreatmentDate) AS
+							(SELECT DISTINCT Title, TreatmentDate
+							FROM "DENNIS.KIM".Patient Pat,
+								 "DENNIS.KIM".InjuryInfo I,
+								 "DENNIS.KIM".Product Prod
+							WHERE Pat.CaseNumber = I.CaseNumber
+								  AND I.Product1Code = Prod.Code),
+						 Grouped(Title, TreatmentDate, Grp) AS (
+								SELECT Title,
+									   TreatmentDate,
+									   TreatmentDate-ROW_NUMBER() OVER (PARTITION BY Title ORDER BY TreatmentDate) Grp
+								FROM UserDate),
+						 HighestStreaks(Title, StreakLength) AS (
+								SELECT Title, MAX(StreakLength) AS StreakLength
+								FROM (SELECT Title, 
+											 MAX(TreatmentDate) - MIN(TreatmentDate) + 1 AS StreakLength 
+									  FROM Grouped
+									  GROUP BY Title, Grp) temp
+								GROUP BY Title
+								ORDER BY StreakLength DESC)
+						SELECT Title AS product_title, 
+						   EXTRACT(MONTH FROM TreatmentDate) AS x_value1, 
+						   EXTRACT(YEAR FROM TreatmentDate) AS x_value2, 
+						   COUNT(*) AS y_value
+						FROM "DENNIS.KIM".Patient Pat,
+						 "DENNIS.KIM".InjuryInfo I,
+						 "DENNIS.KIM".Product Prod
+						WHERE Pat.CaseNumber = I.CaseNumber
+						  AND I.Product1Code = Prod.Code
+						  AND Title IN (SELECT Title 
+										FROM HighestStreaks
+										WHERE StreakLength = (SELECT MAX(StreakLength)
+															  FROM HighestStreaks))
+						GROUP BY Title, 
+							 EXTRACT(MONTH FROM TreatmentDate), 
+							 EXTRACT(YEAR FROM TreatmentDate)
+						ORDER BY Title, 
+							 EXTRACT(YEAR FROM TreatmentDate),
+							 EXTRACT(MONTH FROM TreatmentDate)`).Scan(&graphDualValues)
+
+	// Concatenate the two structs into one var
+	// Copy the Label, Title, Concatenated x's, and y's into one struct
+	// Send this value
+	//username := r.URL.Query().Get("username")
+	//password := r.URL.Query().Get("password")
+
+	graphDualProper = convertGraphDualValues(graphDualValues)
+	fullGraph := graphReadySingleVal(graphDualProper, len(dualDates))
+
+	var graphToSend entities.FullGraphSingleValue
+	graphToSend.GraphType = 2
+	graphToSend.ProductWithSingleVal = fullGraph
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(graphToSend)
+}
+
 func TestString(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var graphDates []entities.GraphDates
@@ -1223,6 +1291,8 @@ func ComplexQuerySelector(w http.ResponseWriter, r *http.Request) {
 		SeasonalHazards(w, r)
 	} else if complexQueryNumber == 7 {
 		MostDangersHouseProductRog(w, r)
+	} else if complexQueryNumber == 8 {
+		DangerTwentyFourSeven(w, r)
 	}
 }
 
