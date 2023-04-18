@@ -986,15 +986,20 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphValues)
 		//json.NewEncoder(w).Encode("Incorrect password")
-		graphYearlyCustomizable := convertGraphSingleValues(graphValues)
-		// First do a query that gives all of the dates in sorted fashion
-		var graphDates []entities.GraphDates
-		DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
-						FROM "DENNIS.KIM".Patient
-						ORDER BY year`).Scan(&graphDates)
-		fullGraph = graphReadySingleVal(graphYearlyCustomizable, len(graphDates))
-		newGraphToSend.GraphType = 1
-		newGraphToSend.ProductWithSingleVal = fullGraph
+		if len(graphValues) > 0 {
+			graphYearlyCustomizable := convertGraphSingleValues(graphValues)
+			// First do a query that gives all of the dates in sorted fashion
+			var graphDates []entities.GraphDates
+			DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
+							FROM "DENNIS.KIM".Patient
+							ORDER BY year`).Scan(&graphDates)
+			fullGraph = graphReadySingleVal(graphYearlyCustomizable, len(graphDates))
+			newGraphToSend.GraphType = 1
+			newGraphToSend.ProductWithSingleVal = fullGraph
+		} else {
+			newGraphToSend.GraphType = 0
+		}
+
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -1011,16 +1016,21 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
         ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
-		//json.NewEncoder(w).Encode("Incorrect password")
-		graphMonthlyCustomizable := convertGraphDualValues(graphDualValues)
-		var dualDates []entities.DualDates
-		DBInstance.Raw(`SELECT DISTINCT EXTRACT(MONTH FROM TreatmentDate) AS month, 
-							EXTRACT(YEAR FROM TreatmentDate) AS year
-						FROM "DENNIS.KIM".Patient
-						ORDER BY year, month`).Scan(&dualDates)
-		fullGraph = graphReadySingleVal(graphMonthlyCustomizable, len(dualDates))
-		newGraphToSend.GraphType = 2
-		newGraphToSend.ProductWithSingleVal = fullGraph
+		if len(graphDualValues) > 0 {
+			//json.NewEncoder(w).Encode("Incorrect password")
+			graphMonthlyCustomizable := convertGraphDualValues(graphDualValues)
+			var dualDates []entities.DualDates
+			DBInstance.Raw(`SELECT DISTINCT EXTRACT(MONTH FROM TreatmentDate) AS month, 
+								EXTRACT(YEAR FROM TreatmentDate) AS year
+							FROM "DENNIS.KIM".Patient
+							ORDER BY year, month`).Scan(&dualDates)
+			fullGraph = graphReadySingleVal(graphMonthlyCustomizable, len(dualDates))
+			newGraphToSend.GraphType = 2
+			newGraphToSend.ProductWithSingleVal = fullGraph
+		} else {
+			newGraphToSend.GraphType = 0
+		}
+
 	} else if unit == "season" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
