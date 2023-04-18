@@ -142,3 +142,7 @@ type ProductWithSingleFloat struct {
 type SingleFloat struct {
 	YValue float64 `json:"y_value"`
 }
+
+type Product struct {
+	Title string `json:"title"`
+}

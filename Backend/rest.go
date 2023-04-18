@@ -18,9 +18,10 @@ func httpHandler() http.Handler {
 
 	// ** Get Routes ** //
 	router.HandleFunc("/api/users", GetUsers).Methods("GET")
+	router.HandleFunc("/api/getOptions", AllProductTitles).Methods("GET")
 	router.HandleFunc("/api/top25", TopTwentyFive).Methods("GET")
 	router.HandleFunc("/api/constants", ConstantDangers).Methods("GET")
-	router.HandleFunc("/api/fatal-products", FatalProducts).Methods("GET")
+	router.HandleFunc("/api/fatal-products", Fatality).Methods("GET")
 	router.HandleFunc("/api/summertime-sadness", SummertimeSadness).Methods("GET")
 	router.HandleFunc("/api/seasonal-hazards", SeasonalHazards).Methods("GET")
 	router.HandleFunc("/api/MDHP-growth", MostDangersHouseProductRog).Methods("GET")

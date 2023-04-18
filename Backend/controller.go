@@ -617,7 +617,7 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphToSend)
 }
 
-func FatalProducts(w http.ResponseWriter, r *http.Request) {
+func Fatality(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var graphDates []entities.GraphDates
 	DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
@@ -1219,7 +1219,7 @@ func ComplexQuerySelector(w http.ResponseWriter, r *http.Request) {
 	} else if complexQueryNumber == 2 {
 		ConstantDangers(w, r)
 	} else if complexQueryNumber == 3 {
-		FatalProducts(w, r)
+		Fatality(w, r)
 	} else if complexQueryNumber == 4 {
 		SummertimeSadness(w, r)
 	} else if complexQueryNumber == 5 {
@@ -1265,4 +1265,15 @@ func AllCasesOfProductInjury(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphToSend)
+}
+
+func AllProductTitles(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	var productNames []entities.Product
+	DBInstance.Raw(`SELECT DISTINCT Title AS title
+					FROM "DENNIS.KIM".Product
+					ORDER BY Title`).Scan(&productNames)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(productNames)
 }
