@@ -59,6 +59,12 @@ export class DatapageComponent implements OnInit {
     constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
 
     ngOnInit() {
+        if (localStorage.getItem('Product') != undefined) {
+            this.firstTimeGraph(localStorage.getItem('Product')!);
+        }
+        else
+            console.log('ERROR GETTTING THE PRODUCT');
+
         this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
             map(value => this._filterLabels(value || '')),
@@ -100,6 +106,65 @@ export class DatapageComponent implements OnInit {
             factory: false,
             sport: false,
             otherLoc: false
+        });
+    }
+    firstTimeGraph(inProduct: string) {
+        var formData: any=new FormData();
+        formData.append('product', inProduct);
+        formData.append('unit', 'season');
+        formData.append('ageStart', 0);
+        formData.append('ageEnd', 120);
+        formData.append('male', false);
+        formData.append('female', false);
+        formData.append('otherSex', false);
+        formData.append('white', false);
+        formData.append('black', false);
+        formData.append('asian', false);
+        formData.append('AI', false);
+        formData.append('PI', false);
+        formData.append('otherDemo', false);
+        formData.append('TR', false);
+        formData.append('hospitalized', false);
+        formData.append('fatality', false);
+        formData.append('otherDisp', false);
+        formData.append('home', false);
+        formData.append('farm', false);
+        formData.append('street', false);
+        formData.append('MH', false);
+        formData.append('city', false);
+        formData.append('school', false);
+        formData.append('factory', false);
+        formData.append('sport', false);
+        formData.append('otherLoc', false);
+
+        this.http.post('http://localhost:5000/users/sendData', formData)
+        .subscribe(data =>{
+            this.graphData = data;
+            console.log(this.graphData);
+            this.graphType = this.graphData.graph_type;
+            
+            if (this.graphType == 0) 
+                console.log('Empty Query... no graph');
+            else if (this.graphType == 1)
+                console.log('Yearly');
+            else if (this.graphType == 2)
+                console.log('Monthly');
+            else if (this.graphType == 3)
+                console.log('Seasonaly');
+            else
+                console.log('There was an error with the Graph Type number.');
+            
+            if (this.graphType != 0) {
+                for (let i = 0; i < this.graphData.product_structs.length; i++) {
+                    const product = this.graphData.product_structs[i].product_title;
+                    console.log('Product Title: ', product);
+                    for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                        const point = this.graphData.product_structs[i].y_values[j];
+                        console.log('Y value: ', point);
+                    }
+                }
+                this.createChart(this.graphData);
+            }
         });
     }
 

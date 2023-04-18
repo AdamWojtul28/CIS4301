@@ -39,11 +39,29 @@
             <mat-card-header>
                 <u> <b>Search for unsafe products!</b> </u>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content class="inputContent">
                 Protect your family and search to see whether a product is unsafe.
             </mat-card-content>
             <mat-card-footer>
-                <a href="/data" class="button">Search</a>
+                <!-- <a href="/data" class="button">Search</a> -->
+            <div class="search">
+                <mat-form-field class="search-bar">
+                    <input type="text" placeholder="Product" matInput 
+                    [formControl]="search" [matAutocomplete]="autoLabel">
+                    <mat-autocomplete #autoLabel="matAutocomplete">
+                    <mat-option *ngFor="let label of filteredOptions | async" [value]="label">
+                    {{label}}
+                    </mat-option>
+                </mat-autocomplete>
+            
+                <mat-error class="error" *ngFor="let validation of validation_msgs.search">
+                    <div class="error" *ngIf="search.hasError(validation.type)">
+                    {{validation.message}}
+                    </div>
+                </mat-error>
+                </mat-form-field>
+            </div>
+                <button class="bottomButton" mat-raised-button color="primary" [disabled]="search.invalid" (click)="send()">Try it out</button>
             </mat-card-footer>
         </mat-card>
     </div>

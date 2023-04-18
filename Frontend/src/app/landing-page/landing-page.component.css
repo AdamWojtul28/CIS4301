@@ -81,3 +81,31 @@
     margin-bottom: 30px;
     align-self: center;
   }
+  .search-bar {
+    width: 350px;
+    padding-bottom: 75px;
+  }
+  .bottomButton {
+    display: inline-block;
+    padding: 20px 40px;
+    margin: 0 10px;
+    font-size: 28px;
+    text-align: center;
+    color: white;
+    background-color: #3f51b5;
+    border-radius: 50px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none; /* remove underline */
+    width: 300px;
+    height: 70px;
+    margin-left: 25px;
+  }
+  .inputContent {
+    margin-top: -20px;
+  }
+  .error {
+    color: #FF0000;
+    font-size: large;
+    text-shadow: -0.5px 0 rgba(0, 0, 0, 0.500), 0 0.5px rgba(0, 0, 0, 0.500), 0.5px 0 rgba(0, 0, 0, 0.500), 0 -0.5px rgba(0, 0, 0, 0.500);
+}
