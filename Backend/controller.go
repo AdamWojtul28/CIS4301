@@ -960,9 +960,9 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	locationMap["9"] = strings.Join(r.Form["sport"], "")
 	locationMap["0"] = strings.Join(r.Form["otherLoc"], "")
 
-	queryString := ageString
-	//queryString := product
-	//queryString += ageString
+	//queryString := ageString
+	queryString := product
+	queryString += ageString
 	queryString += generateStringForQuery("Sex", sexMap)
 	queryString += generateStringForQuery("Race", raceMap)
 	queryString += generateStringForQuery("DispositionCode", dispositionMap)
@@ -980,8 +980,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 							  "DENNIS.KIM".InjuryInfo I, 
 							  "DENNIS.KIM".Product Prod
 							WHERE Pat.CaseNumber = I.CaseNumber
-							   AND I.Product1Code = Prod.Code
-							   AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
+							   AND I.Product1Code = Prod.Code `
 		lastClauses := ` GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
 		ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
@@ -1010,8 +1009,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 								"DENNIS.KIM".InjuryInfo I,
 								"DENNIS.KIM".Product Prod
 							  WHERE Pat.CaseNumber = I.CaseNumber
-								 AND I.Product1Code = Prod.Code
-									 AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
+								 AND I.Product1Code = Prod.Code `
 		lastClauses := ` 
 		GROUP BY EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate), Prod.Title
         ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate), EXTRACT(MONTH FROM TreatmentDate)`
@@ -1048,8 +1046,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 							  	 "DENNIS.KIM".InjuryInfo I, 
 							  	 "DENNIS.KIM".Product Prod
 							  WHERE Pat.CaseNumber = I.CaseNumber
-							  	  AND I.Product1Code = Prod.Code
-							  	  AND (Title = 'AIR CONDITIONERS' OR Title = 'FOOTWEAR' OR Title = 'MOBILE HOMES') `
+							  	  AND I.Product1Code = Prod.Code `
 		lastClauses := `)
 		GROUP BY product_title, x_value1, x_value2
 		ORDER BY product_title, 
