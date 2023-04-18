@@ -1,1 +1,18 @@
-<p>explore7 works!</p>
+<div class="body">   
+    <div class="chart-container">
+        <canvas  id="MyChart" >{{ chart }}</canvas>
+    </div>  
+
+    <div class="data">
+        <div class="buttonDiv">
+            <button class="dialogButton" mat-raised-button color="primary" (click)="show.showDialog = !show.showDialog">Open data</button>
+            <a class="dialogButton2" mat-raised-button color="primary" href="/explore"> Go Back </a>
+        </div>
+        <div *ngIf="show.showDialog">
+            <mat-card class="dialogCard">
+                <p>This graph shows the monthly rate of growth of the home product(s) that result in the most hospitalizations/deaths between January 2016 and December 2021.</p>
+            </mat-card>
+        </div>
+    </div>
+    
+</div>

@@ -1,1 +1,18 @@
-<p>explore6 works!</p>
+<div class="body">   
+    <div class="chart-container">
+        <canvas  id="MyChart" >{{ chart }}</canvas>
+    </div>  
+
+    <div class="data">
+        <div class="buttonDiv">
+            <button class="dialogButton" mat-raised-button color="primary" (click)="show.showDialog = !show.showDialog">Open data</button>
+            <a class="dialogButton2" mat-raised-button color="primary" href="/explore"> Go Back </a>
+        </div>
+        <div *ngIf="show.showDialog">
+            <mat-card class="dialogCard">
+                <p>This graph shows the seasonal trends of products where 50% of their total cases occur in one season between Winter 2016 and Winter 2021.</p>
+            </mat-card>
+        </div>
+    </div>
+    
+</div>
