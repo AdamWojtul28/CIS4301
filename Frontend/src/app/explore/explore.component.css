@@ -3,7 +3,7 @@ body {
     height: 100%;
 }
 mat-card {
-    border-color: gray;
+    background-color: #d58dfb;
     border-radius: 5px;
     border-width: 3px;
     margin-left: 0.8%;
@@ -25,6 +25,7 @@ mat-card-content {
     font-size: 2vh;
     margin-left: 32%;
     margin-top: 3px;
+    color: #7c7c7c;
 }
 .button1 {
     margin: 25px;

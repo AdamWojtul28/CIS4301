@@ -38,7 +38,7 @@
     display: inline-block;
     padding: 20px 40px;
     margin: 0 10px;
-    font-size: 24px;
+    font-size: 28px;
     text-align: center;
     color: white;
     background-color: #3f51b5;
@@ -46,6 +46,8 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     text-decoration: none; /* remove underline */
+    width: 160px;
+    height: 34px;
   }
   
   
@@ -53,4 +55,29 @@
     transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
   }
-  
+  mat-card-header {
+    padding: 15px;
+    color: black;
+    font-size: 40px;
+    align-self: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  mat-card-content {
+    padding: 20px;
+    flex-grow: 1;
+    color: #7c7c7c;
+    font-size: 35px;
+  }
+  mat-card {
+    display: flexbox;
+    background-color: #d58dfb;
+    margin: 40px;
+    height: 575px;
+    width: 455px;
+  }
+  mat-card-footer {
+    margin-bottom: 30px;
+    align-self: center;
+  }
