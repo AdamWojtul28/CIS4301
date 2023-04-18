@@ -915,6 +915,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(queryString)
 
 	var graphToSend entities.FullGraphwZeroes
+	var newGraphToSend entities.FullGraphSingleValue
 	var fullGraph []entities.ProductWithSingleVal
 	if unit == "year" {
 		var graphValues []entities.GraphValues
@@ -939,7 +940,8 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 						FROM "DENNIS.KIM".Patient
 						ORDER BY year`).Scan(&graphDates)
 		fullGraph = graphReadySingleVal(graphYearlyCustomizable, len(graphDates))
-		graphToSend.GraphType = 1
+		newGraphToSend.GraphType = 1
+		newGraphToSend.ProductWithFloatsStruct = fullGraph
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -1021,7 +1023,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(fullGraph)
+	json.NewEncoder(w).Encode(newGraphToSend)
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {

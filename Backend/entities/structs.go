@@ -115,6 +115,11 @@ type GraphPointFloatY struct {
 	YValue float64 `json:""`
 }
 
+type FullGraphSingleValue struct {
+	GraphType               int                    `json:"graph_type"`
+	ProductWithFloatsStruct []ProductWithSingleVal `json:"product_structs"`
+}
+
 type ProductWithSingleVal struct {
 	ProductTitle string      `json:"product_title"`
 	Points       []SingleVal `json:"y_values"`
