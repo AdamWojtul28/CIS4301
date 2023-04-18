@@ -122,3 +122,6 @@ mat-card-title {
 .chart-container {
     padding: 15px;
 }
+.warningMessage {
+    font-size: 24px;
+}
