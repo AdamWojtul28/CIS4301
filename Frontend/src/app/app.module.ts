@@ -28,6 +28,12 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { DatapageComponent } from './datapage/datapage.component';
 import { ResultPageComponent } from './result-page/result-page.component';
 import { QuizComponent } from './quiz/quiz.component';
+import { ExploreComponent } from './explore/explore.component';
+import { Explore1Component } from './explore1/explore1.component';
+import { Explore2Component } from './explore2/explore2.component';
+import { Explore3Component } from './explore3/explore3.component';
+import { Explore4Component } from './explore4/explore4.component';
+import { Explore5Component } from './explore5/explore5.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +43,13 @@ import { QuizComponent } from './quiz/quiz.component';
     LandingPageComponent,
     DatapageComponent,
     ResultPageComponent,
-    QuizComponent
+    QuizComponent,
+    ExploreComponent,
+    Explore1Component,
+    Explore2Component,
+    Explore3Component,
+    Explore4Component,
+    Explore5Component
   ],
   imports: [
     BrowserModule,
