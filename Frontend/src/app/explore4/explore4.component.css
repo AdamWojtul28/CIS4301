@@ -19,12 +19,14 @@
     height: 80px;
     margin-top: 50px;
     margin-left: 80px;
+    font-size: 22px;
 }
 .dialogButton2 {
     width: 250px;
     height: 80px;
     margin-top: 40px;
     margin-left: 80px;
+    font-size: 22px;
 }
 .dialogCard {
     width: 35%;
