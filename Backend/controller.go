@@ -1203,7 +1203,7 @@ func ComplexQuerySelector(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(key, val)
 	}
 
-	number := strings.Join(r.Form["number"], "")
+	number := strings.Join(r.Form["query"], "")
 	complexQueryNumber, err := strconv.ParseInt(number, 10, 64)
 	if err != nil {
 		log.Fatal(err)
