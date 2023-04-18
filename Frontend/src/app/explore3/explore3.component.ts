@@ -34,19 +34,15 @@ export class Explore3Component {
 
     constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
-        //this.graphData2 = this.test(this.query);
-        //console.log('result from get = ', this.graphData2);
         this.sendGroup = this._formBuilder.group({
             query: 3
         });
 
         var formData: any = new FormData();
         this.addDataToSend(formData);
-        console.log(this.sendGroup.get('query')?.value);
         this.http.post('http://localhost:5000/api/quiz', formData)
         .subscribe(data =>{
             this.graphData = data;
-            //console.log(this.graphData);
             this.graphType = this.graphData.graph_type;
             
             if (this.graphType == 0) 
@@ -78,16 +74,8 @@ export class Explore3Component {
         formData.append('query', this.sendGroup.get('query')?.value);
     }
 
-    test(query: number) {
-        let searchURL = 'http://localhost:5000/api/quiz';
-        searchURL += '?query=' + encodeURIComponent(1);
-
-        console.log('search URL = ', searchURL);
-
-        return this.http.get(searchURL);
-    }
-
     createChart(graphData: any) {
+        // yearly
         if (this.graphType == 1) {
             this.chart = new Chart("MyChart", {
             type: 'line', 
@@ -107,7 +95,6 @@ export class Explore3Component {
                     tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
                 }
 
-                console.log(tempArr);
                 var temp = {
                     label: this.graphData.product_structs[i].product_title,
                     data: tempArr
@@ -136,7 +123,6 @@ export class Explore3Component {
                         tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
                     }
     
-                    console.log(tempArr);
                     var temp = {
                         label: this.graphData.product_structs[i].product_title,
                         data: tempArr
@@ -165,7 +151,6 @@ export class Explore3Component {
                         tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
                     }
     
-                    console.log(tempArr);
                     var temp = {
                         label: this.graphData.product_structs[i].product_title,
                         data: tempArr
