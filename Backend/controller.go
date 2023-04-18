@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -1194,29 +1195,38 @@ func TestFormParsing1(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println(formToParse.OtherLoc)
 }
 
-func YourHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+func ComplexQuerySelector(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Println("r.Body", string(body))
-	//fmt.Println("GET params were:", r.URL.Query())
-	//
-	//one := r.URL.Query().Get("one")
-	//fmt.Println(one)
-	r.ParseForm()
-	fmt.Println("one=" + r.FormValue("one"))
-	fmt.Println("two=" + r.FormValue("two"))
-	//fmt.Fprintf(w, ("one=" + r.FormValue("one")))
-	//fmt.Fprintf(w, ("two=" + r.FormValue("two")))
-	fmt.Fprintf(w, "Gorilla!\n")
+	//Access the age
+	for key, val := range r.Form {
+		fmt.Println(key, val)
+	}
 
-	name := r.Form.Get("one")
-	email := r.Form.Get("two")
-
-	fmt.Fprintf(w, "Name: %s\n", name)
-	fmt.Fprintf(w, "Email: %s\n", email)
+	number := strings.Join(r.Form["number"], "")
+	complexQueryNumber, err := strconv.ParseInt(number, 10, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(complexQueryNumber)
+	if complexQueryNumber == 0 {
+		AllCasesOfProductInjury(w, r)
+	} else if complexQueryNumber == 1 {
+		TopTwentyFive(w, r)
+	} else if complexQueryNumber == 2 {
+		ConstantDangers(w, r)
+	} else if complexQueryNumber == 3 {
+		FatalProducts(w, r)
+	} else if complexQueryNumber == 4 {
+		SummertimeSadness(w, r)
+	} else if complexQueryNumber == 5 {
+		SeasonalHazards(w, r)
+	} else if complexQueryNumber == 6 {
+		MostDangersHouseProductRog(w, r)
+	}
 }
 
 func AllCasesOfProductInjury(w http.ResponseWriter, r *http.Request) {
