@@ -23,11 +23,8 @@ import { MatDialogModule } from '@angular/material/dialog'
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientModule } from '@angular/common/http';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { DatapageComponent } from './datapage/datapage.component';
-import { ResultPageComponent } from './result-page/result-page.component';
 import { QuizComponent } from './quiz/quiz.component';
 import { ExploreComponent } from './explore/explore.component';
 import { Explore1Component } from './explore1/explore1.component';
@@ -42,11 +39,8 @@ import { Explore8Component } from './explore8/explore8.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    RegisterComponent,
     LandingPageComponent,
     DatapageComponent,
-    ResultPageComponent,
     QuizComponent,
     ExploreComponent,
     Explore1Component,
