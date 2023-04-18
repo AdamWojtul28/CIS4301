@@ -1274,3 +1274,9 @@ func AllProductTitles(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(productNames)
 }
+
+func Test(w http.ResponseWriter, r *http.Request) {
+	// First do a query that gives all of the dates in sorted fashion
+	number := r.URL.Query().Get("query")
+	fmt.Println(number)
+}

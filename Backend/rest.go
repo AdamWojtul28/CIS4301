@@ -31,7 +31,7 @@ func httpHandler() http.Handler {
 	// ** Post Routes ** //
 	router.HandleFunc("/api/users", CreateUser).Methods("POST")
 	router.HandleFunc("/users/sendData", CustomQueryMaker).Methods("POST")
-	router.HandleFunc("/api/quiz", ComplexQuerySelector)
+	router.HandleFunc("/api/quiz", Test).Methods("POST")
 
 	// ** Put Routes ** //
 	router.HandleFunc("/api/users/{id}", UpdateUser).Methods("PUT")
