@@ -31,8 +31,97 @@ export class DatapageComponent implements OnInit {
     graphData: any;
     graphType: number;
 
-    options: string[] = ['Delhi', 'Mumbai', 'Banglore']; 
-    
+    options: string[] = ["ACIDS",
+    "ADHESIVES",
+    "AIRCRAFT",
+    "ANTIFREEZE",
+    "ANTIHISTAMINES",
+    "ASHTRAYS",
+    "BATONS",
+    "BATTERIES",
+    "BENCHES",
+    "BLEACHERS",
+    "BOILERS",
+    "CATHETERS",
+    "CAUSTICS",
+    "CHARCOAL",
+    "CLOCKS",
+    "CLOTHESBRUSHES",
+    "CLOTHESPINS",
+    "COINS",
+    "CORKSCREWS",
+    "COTS",
+    "DEHUMIDIFIERS",
+    "DIAPERS",
+    "DISHWASHERS",
+    "DOORSTOPS",
+    "ESCALATORS",
+    "EYEGLASSES",
+    "EYELINERS",
+    "FANS",
+    "FILTERS",
+    "FIREWORKS",
+    "FLARES",
+    "FOOTLOCKERS",
+    "FOOTWEAR",
+    "FUTONS",
+    "GASOLINE",
+    "HACKSAWS",
+    "HAMMERS",
+    "HAMMOCKS",
+    "HOUSEPLANTS",
+    "HUMIDIFIERS",
+    "INCINERATORS",
+    "JEWELRY",
+    "JIGSAWS",
+    "JUICERS",
+    "KEROSENE",
+    "LASERS",
+    "LEVELS",
+    "LOCKERS",
+    "LUBRICANTS",
+    "LUGGAGE",
+    "LYE",
+    "MARBLES",
+    "MATCHBOOKS",
+    "NIGHTWEAR",
+    "OUTERWEAR",
+    "PESTICIDES",
+    "PILLOWS",
+    "PLAYPENS",
+    "POLES",
+    "PROJECTORS",
+    "REAMERS",
+    "REFRIGERATORS",
+    "ROTISSERIES",
+    "SAFES",
+    "SAUNAS",
+    "SCAFFOLDING",
+    "SCREWDRIVERS",
+    "SEEDS",
+    "SINKS",
+    "SLEDS",
+    "SLIPCOVERS",
+    "SOAPS",
+    "STANCHIONS",
+    "STEPLADDERS",
+    "STILTS",
+    "TARPAULINS",
+    "TELEVISIONS",
+    "TOASTERS",
+    "TOBOGGANS",
+    "TOILETS",
+    "TRAINS",
+    "TRAMPOLINES",
+    "TRICYCLES",
+    "TURPENTINE",
+    "UMBRELLAS",
+    "UNICYCLES",
+    "VAPORIZERS",
+    "WALLPAPER",
+    "WATCHES",
+    "WHEELCHAIRS"];
+
     yearLabels: string[] = ['2016', '2017', '2018', '2019', '2020', '2021'];
     monthLabels: string[] = ['Jan 2016', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
                              'Jan 2017', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
@@ -47,7 +136,6 @@ export class DatapageComponent implements OnInit {
                               'Winter 2020', 'Spring', 'Summer', 'Fall',
                               'Winter 2021', 'Spring', 'Summer', 'Fall',];
 
-
     public search = new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] });
 
     public validation_msgs = {
@@ -57,13 +145,13 @@ export class DatapageComponent implements OnInit {
         ]
     };
 
-  constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
+    constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
+
     ngOnInit() {
         this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
             map(value => this._filterLabels(value || '')),
         );
-        
         this.inputGroup = this._formBuilder.group({
             search: new FormControl('', { validators: [autocompleteStringValidator(this.options), Validators.required] }),
             unit: new FormControl('year')
@@ -111,7 +199,7 @@ export class DatapageComponent implements OnInit {
         .subscribe(data =>{
             this.graphData = data;
             console.log(this.graphData);
-            this.graphType = this.graphData.graph_type;            
+            this.graphType = this.graphData.graph_type;
             
             if (this.graphType == 0) 
                 console.log('Empty Query... no graph');
