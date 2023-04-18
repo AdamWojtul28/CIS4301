@@ -84,7 +84,21 @@ export class Explore4Component {
                 datasets: []
             },
             options: {
-                  aspectRatio:3
+                  aspectRatio:3,
+                  scales: {
+                      x: {
+                          title: {
+                              display: true,
+                              text: 'Time (Year)'
+                          }
+                      },
+                      y: {
+                          title: {
+                              display: true,
+                              text: 'Percentage Hospitalizations/Fatalities (%)'
+                          }
+                      }
+                  }
             }  
             });
   
@@ -112,7 +126,21 @@ export class Explore4Component {
                     datasets: []
                 },
                 options: {
-                      aspectRatio:3
+                      aspectRatio:3,
+                      scales: {
+                          x: {
+                              title: {
+                                  display: true,
+                                  text: 'Time (Month)'
+                              }
+                          },
+                          y: {
+                              title: {
+                                  display: true,
+                                  text: 'Percentage Hospitalizations/Fatalities (%)'
+                              }
+                          }
+                      }
                 }  
                 });
       
@@ -140,7 +168,21 @@ export class Explore4Component {
                     datasets: []
                 },
                 options: {
-                      aspectRatio:3
+                      aspectRatio:3,
+                      scales: {
+                          x: {
+                              title: {
+                                  display: true,
+                                  text: 'Time (Season)'
+                              }
+                          },
+                          y: {
+                              title: {
+                                  display: true,
+                                  text: 'Percentage Hospitalizations/Fatalities (%)'
+                              }
+                          }
+                      }
                 }  
                 });
       
