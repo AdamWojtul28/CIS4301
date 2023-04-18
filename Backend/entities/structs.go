@@ -112,5 +112,14 @@ type ProductWithFloatsStruct struct {
 
 type GraphPointFloatY struct {
 	XValue int     `json:"x_value"`
-	YValue float64 `json:"y_value"`
+	YValue float64 `json:""`
+}
+
+type ProductWithSingleVal struct {
+	ProductTitle string      `json:"product_title"`
+	Points       []SingleVal `json:"y_values"`
+}
+
+type SingleVal struct {
+	YValue int `json:"y_value"`
 }

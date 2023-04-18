@@ -223,6 +223,72 @@ func convertGraphDualValuesYFloat(graphDualSlice []entities.GraphDualXValuesYFlo
 	return graphDualProper
 }
 
+func graphReadySingleVal(graphSlice []entities.GraphProperValues, numberXVals int) []entities.ProductWithSingleVal {
+	currentTitle := graphSlice[0].ProductTitle
+	j := 0
+
+	var wholeStructure []entities.ProductWithSingleVal
+	var singleStruct entities.ProductWithSingleVal
+	singleStruct.ProductTitle = graphSlice[0].ProductTitle
+
+	var graphPoints []entities.SingleVal
+	var tempGraphPoint entities.SingleVal
+
+	for i := 0; i < len(graphSlice); i++ {
+		if graphSlice[i].ProductTitle == currentTitle {
+			if graphSlice[i].XValue == j {
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			} else {
+				for j < graphSlice[i].XValue {
+					tempGraphPoint.YValue = 0
+					graphPoints = append(graphPoints, tempGraphPoint)
+					j++
+				}
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			}
+		} else {
+			if j >= numberXVals {
+				fmt.Println("Reset j")
+				j = 0
+			} else {
+				for j < numberXVals {
+					tempGraphPoint.YValue = 0
+					j++
+					graphPoints = append(graphPoints, tempGraphPoint)
+				}
+			}
+			singleStruct.Points = graphPoints
+			wholeStructure = append(wholeStructure, singleStruct)
+			currentTitle = graphSlice[i].ProductTitle
+			singleStruct.ProductTitle = graphSlice[i].ProductTitle
+			singleStruct.Points = nil
+			graphPoints = nil
+			i--
+			j = 0
+		}
+		if i == len(graphSlice)-1 {
+			for j < numberXVals {
+				tempGraphPoint.YValue = 0
+				j++
+				graphPoints = append(graphPoints, tempGraphPoint)
+			}
+			singleStruct.Points = graphPoints
+			wholeStructure = append(wholeStructure, singleStruct)
+		}
+	}
+	for i := 0; i < len(wholeStructure); i++ {
+		fmt.Println(wholeStructure[i].ProductTitle)
+		for j := 0; j < len(wholeStructure[i].Points); j++ {
+			fmt.Println(wholeStructure[i].Points[j].YValue)
+		}
+	}
+	return wholeStructure
+}
+
 func graphReady(graphSlice []entities.GraphProperValues, numberXVals int) []entities.ProductWithValuesStruct {
 	currentTitle := graphSlice[0].ProductTitle
 	j := 0
@@ -849,6 +915,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(queryString)
 
 	var graphToSend entities.FullGraphwZeroes
+	var fullGraph []entities.ProductWithSingleVal
 	if unit == "year" {
 		var graphValues []entities.GraphValues
 		//var graphProperValues []entities.GraphProperValues
@@ -871,9 +938,8 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 		DBInstance.Raw(`SELECT DISTINCT EXTRACT(YEAR FROM TreatmentDate) AS year
 						FROM "DENNIS.KIM".Patient
 						ORDER BY year`).Scan(&graphDates)
-		fullGraph := graphReady(graphYearlyCustomizable, len(graphDates))
+		fullGraph = graphReadySingleVal(graphYearlyCustomizable, len(graphDates))
 		graphToSend.GraphType = 1
-		graphToSend.ProductWithValues = fullGraph
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -955,7 +1021,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(graphToSend)
+	json.NewEncoder(w).Encode(fullGraph)
 }
 
 func generateStringForQuery(category string, someMap map[string]string) string {
