@@ -1246,11 +1246,11 @@ func AllCasesOfProductInjury(w http.ResponseWriter, r *http.Request) {
 					ORDER BY x_value`).Scan(&graphValues)
 
 	graphProperValues = convertGraphSingleValues(graphValues)
-	fullGraph := graphReady(graphProperValues, len(graphDates))
+	fullGraph := graphReadySingleVal(graphProperValues, len(graphDates))
 
-	var graphToSend entities.FullGraphwZeroes
+	var graphToSend entities.FullGraphSingleValue
 	graphToSend.GraphType = 1
-	graphToSend.ProductWithValues = fullGraph
+	graphToSend.ProductWithSingleVal = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
