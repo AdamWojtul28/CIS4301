@@ -27,21 +27,12 @@ mat-card-content {
     margin-top: 3px;
     color: #7c7c7c;
 }
-.button1 {
-    margin: 25px;
-    left: 25vh;
-    padding: 25px 55px;
-    font-size: 1.8vh;
+.button-div {
+    width: auto;
 }
-.button2 {
+.button {
     margin: 25px;
-    left: 50vh;
     padding: 25px 55px;
     font-size: 1.8vh;
-}
-.button3 {
-    margin: 25px;
-    left: 75vh;
-    padding: 25px 55px;
-    font-size: 1.8vh;
+    margin-left: 25vh;
 }

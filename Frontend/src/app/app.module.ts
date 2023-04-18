@@ -37,6 +37,7 @@ import { Explore4Component } from './explore4/explore4.component';
 import { Explore5Component } from './explore5/explore5.component';
 import { Explore6Component } from './explore6/explore6.component';
 import { Explore7Component } from './explore7/explore7.component';
+import { Explore8Component } from './explore8/explore8.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { Explore7Component } from './explore7/explore7.component';
     Explore4Component,
     Explore5Component,
     Explore6Component,
-    Explore7Component
+    Explore7Component,
+    Explore8Component
   ],
   imports: [
     BrowserModule,
