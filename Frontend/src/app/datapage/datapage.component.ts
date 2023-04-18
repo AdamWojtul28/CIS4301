@@ -8,19 +8,19 @@ import {map, startWith} from 'rxjs/operators';
 // 2. In console type "npm install chart.js"
 import { Chart } from 'chart.js/auto';
 
-interface coord {
-    x_value: number;
-    y_value: number;
-}
-
 interface ProductStruct {
     product_title: string;
-    graph_point: coord[];
+    y_values: number[];
 }
 
 interface graphData {
     graph_type: number;
     product_structs: ProductStruct[];
+}
+
+interface datasets_interface {
+    label: string;
+    data: number[];
 }
 
 @Component({
@@ -130,14 +130,18 @@ export class DatapageComponent implements OnInit {
         this.http.post('http://localhost:5000/users/sendData', formData)
         .subscribe(data =>{
             //console.log(data);
-
             //this.postId=JSON.stringify(data);
             //console.log(this.postId);
             //this.graphData = this.parseData(this.postId);
             //console.log(this.graphData);
             
             this.graphData = data;
+            console.log(this.graphData);
             this.graphType = this.graphData.graph_type;
+            localStorage.setItem("Array", JSON.stringify(this.graphData));
+            
+            
+            
             if (this.graphType == 1)
                 console.log('Yearly');
             else if (this.graphType == 2)
@@ -146,69 +150,22 @@ export class DatapageComponent implements OnInit {
                 console.log('Seasonaly');
             else
                 console.log('There was an error with the Graph Type number.');
-
+            
             for (let i = 0; i < this.graphData.product_structs.length; i++) {
               const product = this.graphData.product_structs[i].product_title;
               //'Product Title: ', this.graphData.product_structs[i].product_title
               console.log('Product Title: ', product);
-              for (let j = 0; j < this.graphData.product_structs[i].graph_point.length; j++) {
-                const point = this.graphData.product_structs[i].graph_point[j].y_value;
+              for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                const point = this.graphData.product_structs[i].y_values[j];
                 //'Y value: ', this.graphData.product_structs[i].graph_point[j].y_value
                 console.log('Y value: ', point);
               }
             }
-            // console.log('All the data in an array');
-            // console.log(this.graphData);
-            // console.log('Y values in an array');
-            //     for (const productTitle in this.graphData) {
-            //         if (Object.prototype.hasOwnProperty.call(this.graphData, productTitle)) {
-            //             const data = this.graphData[productTitle];
-            //             //console.log(productTitle);
-            // //NEED TO FIX ADDING THE PRDUCT TITLE       //this.graphLabels[index] = productTitle;
-            //                     //console.log(this.graphLabels[index]);
-            //             const xValues = data.x;
-            //             const yValues = data.y;
-            //             this.graphY = yValues;
-            //             console.log(this.graphY);
-            //         }
-            //     }
+
             this.createChart(this.graphData);
-
         });
-
-      // Logging all the values
-        /*
-      console.log('Search: ', this.search.value);
-      console.log('Time unit: ', this.inputGroup.get('unit')?.value);
-      console.log('Age Start: ', this.ageGroup.get('ageStart')?.value)
-      console.log('Age End: ', this.ageGroup.get('ageEnd')?.value)
-      console.log('Male: ',this.sexGroup.get('male')?.value)
-      console.log('Female: ',this.sexGroup.get('female')?.value)
-      console.log('Other Sex: ',this.sexGroup.get('otherSex')?.value)
-      console.log('White: ',this.demoGroup.get('white')?.value)
-      console.log('Black: ',this.demoGroup.get('black')?.value)
-      console.log('Asian: ',this.demoGroup.get('asian')?.value)
-      console.log('American Indian: ',this.demoGroup.get('AI')?.value)
-      console.log('Pascific Islander: ',this.demoGroup.get('PI')?.value)
-      console.log('Other Race: ',this.demoGroup.get('otherDemo')?.value)
-      console.log('hospitalized: ',this.dispositionGroup.get('hospitalized')?.value)
-      console.log('Fatality: ',this.dispositionGroup.get('fatality')?.value)
-      console.log('Other Disposition: ',this.dispositionGroup.get('otherDisp')?.value)
-      console.log('Home: ',this.locationGroup.get('home')?.value)
-      console.log('Farm: ', this.locationGroup.get('farm')?.value)
-      console.log('Street: ', this.locationGroup.get('street')?.value)
-      console.log('Motor Home: ', this.locationGroup.get('MH')?.value)
-      console.log('City: ', this.locationGroup.get('city')?.value)
-      console.log('School: ', this.locationGroup.get('school')?.value)
-      console.log('Factory: ', this.locationGroup.get('factory')?.value)
-      console.log('Sport: ', this.locationGroup.get('sport')?.value)
-      console.log('Other Location: ', this.locationGroup.get('otherLoc')?.value)
-      */
-
-    //pause window repathing so that I can test view the console.
-    //window.location.pathname = './data';
     }
-
+    
     parseData(dataString: string) {
       const graphData: graphData = JSON.parse(dataString);
     
@@ -268,7 +225,7 @@ export class DatapageComponent implements OnInit {
     resetAll() {
         //this.search.setValue('');
         this.search.reset();
-        this.inputGroup.reset();
+        this.inputGroup.setValue({search: '', unit: 'year'});
         this.ageGroup.setValue({ageStart: 0, ageEnd: 120});
         this.sexGroup.reset();
         this.demoGroup.reset();
@@ -277,7 +234,7 @@ export class DatapageComponent implements OnInit {
     }
 
     createChart(graphData: any){
-      let chartStatus = Chart.getChart("MyChart"); // <canvas> id
+      let chartStatus = this.chart; // <canvas> id
       if (chartStatus != undefined) {
         chartStatus.destroy();
       }
@@ -285,23 +242,61 @@ export class DatapageComponent implements OnInit {
       if (this.graphType == 1) {
         this.chart = new Chart("MyChart", {
             type: 'line', //this denotes tha type of chart
-      
-
             data: {// values on X-Axis
                 labels: this.yearLabels, 
-                datasets: [
-                    {
-                      label: this.graphData.product_structs[0].product_title,
-                      data: [this.graphData.product_structs[0].graph_point[0].y_value],
-                    }
-                ]
+                datasets: []
             },
             options: {
                 aspectRatio:2.5
             }
             
         });
-    }
+          //const testing: datasets_interface = 
+          //    {
+          //        label: "One",
+          //        data: [1, 2, 3, 4, 5, 6]
+          //    };
+          //this.chart.data.datasets.push(testing);
+
+          for (let i = 0; i < this.graphData.product_structs.length; i++) {
+              
+            var tempArr:number[] = new Array(this.graphData.product_structs[i].y_values.length);
+
+            for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
+            }
+              
+              console.log(tempArr);
+            var temp = {
+                label: this.graphData.product_structs[i].product_title,
+                data: tempArr
+            };
+            
+            //console.log(temp);
+            //console.log('HERE');
+            //temp.data = tempArr;
+            this.chart.data.datasets.push(temp);
+          }
+
+
+
+
+
+        // for (let i = 0; i < this.graphData.product_structs.length; i++) {
+        //     this.chart.data.datasets.forEach((dataset: any) => {
+        //         dataset.label = this.graphData.product_structs[i].product_title;
+        //   });
+          
+        //   for (let j = 0; j < this.graphData.product_structs[i].graph_point.length; j++) {
+        //       //this.chart.data.datasets.forEach((dataset: any) => {
+        //         //dataset.data = this.graphData.product_structs[i].graph_point;
+        //       this.chart.data.datasets.push(this.graphData.product_structs[i].product_title, )
+        //   });
+          
+        //   }
+          
+          this.chart.update();
+    } 
         // MONTHLY GRAPH
     else if (this.graphType == 2) {
         this.chart = new Chart("MyChart", {

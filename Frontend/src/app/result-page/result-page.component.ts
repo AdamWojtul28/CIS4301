@@ -13,6 +13,9 @@ export class ResultPageComponent {
     public seasonChart: any;
     public yearChart: any;
     ngOnInit() {
+        
+
+
         this.createChart();
     }
 
@@ -53,6 +56,7 @@ export class ResultPageComponent {
           
         });
 
+        console.log(this.chart.data.datasets);
         /*
         this.monthChart = new Chart("monthChart", {
             type: 'line', //this denotes tha type of chart
