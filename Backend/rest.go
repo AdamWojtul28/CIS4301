@@ -27,6 +27,7 @@ func httpHandler() http.Handler {
 	router.HandleFunc("/api/MDHP-growth", MostDangersHouseProductRog).Methods("GET")
 	router.HandleFunc("/api/retreival", TestString).Methods("GET")
 	router.HandleFunc("/api/count-total", AllCasesOfProductInjury).Methods("GET")
+	router.HandleFunc("/api/quiz", Test).Methods("GET")
 
 	// ** Post Routes ** //
 	router.HandleFunc("/api/users", CreateUser).Methods("POST")
