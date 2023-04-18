@@ -60,6 +60,7 @@
     border-style: solid;
     border-width: medium;
     border-color: black;
+    background-color: #d58dfb;
 }
 .input-container {
     width: fit-content;
@@ -77,6 +78,7 @@
     border-color: black;
     border-style: solid;
     border-width: medium;
+    background-color: #d58dfb;
 }
 
 mat-card {
@@ -121,6 +123,8 @@ mat-card-title {
 }
 .chart-container {
     padding: 15px;
+    background-color: rgba(255, 255, 255, 0.6);
+    
 }
 .warningMessage {
     font-size: 24px;

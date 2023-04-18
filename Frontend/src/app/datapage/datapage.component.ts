@@ -297,8 +297,18 @@ export class DatapageComponent implements OnInit {
                 options: {
                     aspectRatio: 2.5,
                     scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Product Related Injuries'
+                            }
                         }
                     }
                 }  
@@ -331,7 +341,21 @@ export class DatapageComponent implements OnInit {
                 datasets: []
             },
             options: {
-                  aspectRatio:2.5
+                aspectRatio: 2.5,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time (Year)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Product Related Injuries'
+                        }
+                    }
+                }
             }  
             });
   
@@ -361,7 +385,21 @@ export class DatapageComponent implements OnInit {
                     datasets: []
                 },
                 options: {
-                      aspectRatio:2.5
+                    aspectRatio: 2.5,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time (Month)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of Product Related Injuries'
+                            }
+                        }
+                    }
                 }  
                 });
       
@@ -391,7 +429,21 @@ export class DatapageComponent implements OnInit {
                     datasets: []
                 },
                 options: {
-                      aspectRatio:2.5
+                    aspectRatio: 2.5,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time (Season)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of Product Related Injuries'
+                            }
+                        }
+                    }
                 }  
                 });
       
