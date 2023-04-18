@@ -1,6 +1,13 @@
 <link rel="stylesheet" href="./quiz.component.css">
 
+
+
 <div class="quiz-container">
+
+  <div class="button-div">
+    <a class="button" href="#" mat-raised-button color="primary"> Return to Home </a>
+  </div>
+
   <div class="quiz-question">
     <h2>Question {{ currentQuestionNumber + 1 }}</h2>
     <p>{{ getCurrentQuestion().question }}</p>
@@ -16,13 +23,8 @@
 
   <div class="quiz-nav">
     <button (click)="goToPreviousQuestion()" [disabled]="currentQuestionNumber === 0">Previous</button>
-    <button (click)="goToNextQuestion()" [disabled]="currentQuestionNumber === questions.length - 1">Next</button>
-  </div>
-
-  <div class="popup">
-    <div class="chart-container">
-      <canvas  id="MyChart" >{{ chart }}</canvas>
-    </div> 
+    <button (click)="goToDataExplore()">Explore Data</button>
+    <button (click)="goToNextQuestion()" [disabled]= "(currentQuestionNumber === questions.length - 1) || isNextButtonDisabled()">Next</button>
   </div>
 
 </div>
