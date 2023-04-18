@@ -21,5 +21,7 @@ export class ExploreComponent {
             window.location.pathname = './explore6'
         else if (page == 7)
             window.location.pathname = './explore7'
+        else if (page == 8)
+            window.location.pathname = './explore8'
     }
 }

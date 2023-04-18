@@ -1,0 +1,42 @@
+.body {
+    background: linear-gradient(to bottom right, #1e1e1e, #4d4d4d);
+    height: 100%;
+}
+
+.chart-container {
+    padding: 50px;
+    height: 60%;
+    margin-left: 45px;
+    margin-right: 45px;
+    background-color: white;
+    align-items: center;
+}
+.data {
+    
+}
+.dialogButton {
+    width: 250px;
+    height: 80px;
+    margin-top: 50px;
+    margin-left: 80px;
+}
+.dialogButton2 {
+    width: 250px;
+    height: 80px;
+    margin-top: 40px;
+    margin-left: 80px;
+}
+.dialogCard {
+    width: 35%;
+    height: 200px;
+    margin-left: 650px;
+    margin-top: -200px;
+}
+p {
+    padding: 15px;
+    font-size: 25px;
+}
+.buttonDiv {
+    display: flex;
+    flex-flow: column wrap;
+}

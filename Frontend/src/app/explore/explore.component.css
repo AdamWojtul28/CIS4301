@@ -1,9 +1,11 @@
 body {
     background: linear-gradient(to bottom right, #1e1e1e, #4d4d4d);
-    height: 100%;
+    height: max-content;
+    padding-bottom: 0.2%;
 }
 mat-card {
     background-color: #d58dfb;
+    border-color: gray;
     border-radius: 5px;
     border-width: 3px;
     margin-left: 0.8%;
@@ -15,8 +17,8 @@ mat-card {
     border-radius: 5px;
     border-width: 3px;
     margin-left: 0.8%;
-    margin-bottom: 0.3%;
     margin-right: 0.8%;
+    margin-top: 0px;
 }
 mat-card-header {
     font-size: 2.7vh;
