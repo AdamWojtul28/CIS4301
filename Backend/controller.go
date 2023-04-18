@@ -541,11 +541,11 @@ func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 	//password := r.URL.Query().Get("password")
 
 	graphProperValues = convertGraphSingleValues(graphValues)
-	fullGraph := graphReady(graphProperValues, len(graphDates))
+	fullGraph := graphReadySingleVal(graphProperValues, len(graphDates))
 
-	var graphToSend entities.FullGraphwZeroes
+	var graphToSend entities.FullGraphSingleValue
 	graphToSend.GraphType = 1
-	graphToSend.ProductWithValues = fullGraph
+	graphToSend.ProductWithSingleVal = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -605,11 +605,11 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	//password := r.URL.Query().Get("password")
 
 	graphDualProper = convertGraphDualValues(graphDualValues)
-	fullGraph := graphReady(graphDualProper, len(dualDates))
+	fullGraph := graphReadySingleVal(graphDualProper, len(dualDates))
 
-	var graphToSend entities.FullGraphwZeroes
+	var graphToSend entities.FullGraphSingleValue
 	graphToSend.GraphType = 2
-	graphToSend.ProductWithValues = fullGraph
+	graphToSend.ProductWithSingleVal = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -669,9 +669,9 @@ func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	//password := r.URL.Query().Get("password")
 
 	graphProperFloat = convertGraphFloatValues(graphFloatValues)
-	fullGraph := graphReadyFloats(graphProperFloat, len(graphDates))
+	fullGraph := graphReadySingleFloat(graphProperFloat, len(graphDates))
 
-	var graphToSend entities.FullGraphFloats
+	var graphToSend entities.FullGraphSingleFloat
 	graphToSend.GraphType = 1
 	graphToSend.ProductWithFloatsStruct = fullGraph
 
@@ -733,11 +733,11 @@ func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 					EXTRACT(YEAR FROM TreatmentDate)`).Scan(&graphValues)
 
 	graphProperValues = convertGraphSingleValues(graphValues)
-	fullGraph := graphReady(graphProperValues, len(graphDates))
+	fullGraph := graphReadySingleVal(graphProperValues, len(graphDates))
 
-	var graphToSend entities.FullGraphwZeroes
+	var graphToSend entities.FullGraphSingleValue
 	graphToSend.GraphType = 1
-	graphToSend.ProductWithValues = fullGraph
+	graphToSend.ProductWithSingleVal = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -813,11 +813,11 @@ func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 							 END`).Scan(&graphDualValues)
 
 	graphDualProper := convertGraphSeasonalDualValues(graphDualValues)
-	fullGraph := graphReady(graphDualProper, len(dualDates))
+	fullGraph := graphReadySingleVal(graphDualProper, len(dualDates))
 
-	var graphToSend entities.FullGraphwZeroes
+	var graphToSend entities.FullGraphSingleValue
 	graphToSend.GraphType = 3
-	graphToSend.ProductWithValues = fullGraph
+	graphToSend.ProductWithSingleVal = fullGraph
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -875,9 +875,9 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 					ORDER BY m1.YR, m1.MON`).Scan(&graphDualValues)
 
 	graphDualProper = convertGraphDualValuesYFloat(graphDualValues)
-	fullGraph := graphReadyFloats(graphDualProper, len(dualDates))
+	fullGraph := graphReadySingleFloat(graphDualProper, len(dualDates))
 
-	var graphToSend entities.FullGraphFloats
+	var graphToSend entities.FullGraphSingleFloat
 	graphToSend.GraphType = 2
 	graphToSend.ProductWithFloatsStruct = fullGraph
 
@@ -1061,28 +1061,33 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 				 END`
 		newCombinedString := firstThreeClauses + queryString + lastClauses
 		DBInstance.Raw(newCombinedString).Scan(&graphDualValues)
-		graphSeasonalCustomizable := convertGraphSeasonalDualValues(graphDualValues)
-		fmt.Println("Length graphSeasonalCustomizable", len(graphSeasonalCustomizable))
-		var dualDates []entities.DualDates
-		DBInstance.Raw(`SELECT DISTINCT CASE 
-										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
-										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
-										WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
-										ELSE 'Winter'
-									END AS season, 
-									EXTRACT(YEAR FROM TreatmentDate) AS year
-									FROM "DENNIS.KIM".Patient
-									ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
-									 		 CASE
-											 	WHEN Season = 'Winter' THEN 1
-												WHEN Season = 'Spring' THEN 2
-												WHEN Season = 'Summer' THEN 3
-												ELSE 4
-									 		 END`).Scan(&dualDates)
-		fmt.Println("Length seasons", len(dualDates))
-		fullGraph = graphReadySingleVal(graphSeasonalCustomizable, len(dualDates))
-		newGraphToSend.GraphType = 3
-		newGraphToSend.ProductWithSingleVal = fullGraph
+		if len(graphDualValues) > 0 {
+			graphSeasonalCustomizable := convertGraphSeasonalDualValues(graphDualValues)
+			fmt.Println("Length graphSeasonalCustomizable", len(graphSeasonalCustomizable))
+			var dualDates []entities.DualDates
+			DBInstance.Raw(`SELECT DISTINCT CASE 
+											WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0321' AND '0620' THEN 'Spring'
+											WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0621' AND '0922' THEN 'Summer'
+											WHEN TO_CHAR(TreatmentDate,'MMDD') BETWEEN '0923' AND '1220' THEN 'Fall'
+											ELSE 'Winter'
+										END AS season, 
+										EXTRACT(YEAR FROM TreatmentDate) AS year
+										FROM "DENNIS.KIM".Patient
+										ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
+										 		 CASE
+												 	WHEN Season = 'Winter' THEN 1
+													WHEN Season = 'Spring' THEN 2
+													WHEN Season = 'Summer' THEN 3
+													ELSE 4
+										 		 END`).Scan(&dualDates)
+			fmt.Println("Length seasons", len(dualDates))
+
+			fullGraph = graphReadySingleVal(graphSeasonalCustomizable, len(dualDates))
+			newGraphToSend.GraphType = 3
+			newGraphToSend.ProductWithSingleVal = fullGraph
+		} else {
+			newGraphToSend.GraphType = 0
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

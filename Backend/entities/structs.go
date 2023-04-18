@@ -130,8 +130,8 @@ type SingleVal struct {
 }
 
 type FullGraphSingleFloat struct {
-	GraphType               int                    `json:"graph_type"`
-	ProductWithFloatsStruct []ProductWithSingleVal `json:"product_structs"`
+	GraphType               int                      `json:"graph_type"`
+	ProductWithFloatsStruct []ProductWithSingleFloat `json:"product_structs"`
 }
 
 type ProductWithSingleFloat struct {
