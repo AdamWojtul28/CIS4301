@@ -289,6 +289,72 @@ func graphReadySingleVal(graphSlice []entities.GraphProperValues, numberXVals in
 	return wholeStructure
 }
 
+func graphReadySingleFloat(graphSlice []entities.GraphFloatProperValues, numberXVals int) []entities.ProductWithSingleFloat {
+	currentTitle := graphSlice[0].ProductTitle
+	j := 0
+
+	var wholeStructure []entities.ProductWithSingleFloat
+	var singleStruct entities.ProductWithSingleFloat
+	singleStruct.ProductTitle = graphSlice[0].ProductTitle
+
+	var graphPoints []entities.SingleFloat
+	var tempGraphPoint entities.SingleFloat
+
+	for i := 0; i < len(graphSlice); i++ {
+		if graphSlice[i].ProductTitle == currentTitle {
+			if graphSlice[i].XValue == j {
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			} else {
+				for j < graphSlice[i].XValue {
+					tempGraphPoint.YValue = 0
+					graphPoints = append(graphPoints, tempGraphPoint)
+					j++
+				}
+				tempGraphPoint.YValue = graphSlice[i].YValue
+				graphPoints = append(graphPoints, tempGraphPoint)
+				j++
+			}
+		} else {
+			if j >= numberXVals {
+				fmt.Println("Reset j")
+				j = 0
+			} else {
+				for j < numberXVals {
+					tempGraphPoint.YValue = 0
+					j++
+					graphPoints = append(graphPoints, tempGraphPoint)
+				}
+			}
+			singleStruct.Points = graphPoints
+			wholeStructure = append(wholeStructure, singleStruct)
+			currentTitle = graphSlice[i].ProductTitle
+			singleStruct.ProductTitle = graphSlice[i].ProductTitle
+			singleStruct.Points = nil
+			graphPoints = nil
+			i--
+			j = 0
+		}
+		if i == len(graphSlice)-1 {
+			for j < numberXVals {
+				tempGraphPoint.YValue = 0
+				j++
+				graphPoints = append(graphPoints, tempGraphPoint)
+			}
+			singleStruct.Points = graphPoints
+			wholeStructure = append(wholeStructure, singleStruct)
+		}
+	}
+	for i := 0; i < len(wholeStructure); i++ {
+		fmt.Println(wholeStructure[i].ProductTitle)
+		for j := 0; j < len(wholeStructure[i].Points); j++ {
+			fmt.Println(wholeStructure[i].Points[j].YValue)
+		}
+	}
+	return wholeStructure
+}
+
 func graphReady(graphSlice []entities.GraphProperValues, numberXVals int) []entities.ProductWithValuesStruct {
 	currentTitle := graphSlice[0].ProductTitle
 	j := 0
@@ -486,8 +552,6 @@ func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphToSend)
 }
 
-// ^ Done
-
 func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var dualDates []entities.DualDates
@@ -551,8 +615,6 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphToSend)
 }
-
-// ^ Done
 
 func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -618,8 +680,6 @@ func FatalProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphToSend)
 }
 
-// ^ Done
-
 func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var graphDates []entities.GraphDates
@@ -683,8 +743,6 @@ func SummertimeSadness(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphToSend)
 }
-
-// ^ Done
 
 func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -766,8 +824,6 @@ func SeasonalHazards(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(graphToSend)
 }
 
-// ^ Done
-
 func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
 	var dualDates []entities.DualDates
@@ -829,8 +885,6 @@ func MostDangersHouseProductRog(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(graphToSend)
 }
-
-// ^ Done
 
 func TestString(w http.ResponseWriter, r *http.Request) {
 	// First do a query that gives all of the dates in sorted fashion
@@ -914,7 +968,6 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 	queryString += generateStringForQuery("LocationCode", locationMap)
 	fmt.Println(queryString)
 
-	var graphToSend entities.FullGraphwZeroes
 	var newGraphToSend entities.FullGraphSingleValue
 	var fullGraph []entities.ProductWithSingleVal
 	if unit == "year" {
@@ -941,7 +994,7 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 						ORDER BY year`).Scan(&graphDates)
 		fullGraph = graphReadySingleVal(graphYearlyCustomizable, len(graphDates))
 		newGraphToSend.GraphType = 1
-		newGraphToSend.ProductWithFloatsStruct = fullGraph
+		newGraphToSend.ProductWithSingleVal = fullGraph
 	} else if unit == "month" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -965,9 +1018,9 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 							EXTRACT(YEAR FROM TreatmentDate) AS year
 						FROM "DENNIS.KIM".Patient
 						ORDER BY year, month`).Scan(&dualDates)
-		fullGraph := graphReady(graphMonthlyCustomizable, len(dualDates))
-		graphToSend.GraphType = 2
-		graphToSend.ProductWithValues = fullGraph
+		fullGraph = graphReadySingleVal(graphMonthlyCustomizable, len(dualDates))
+		newGraphToSend.GraphType = 2
+		newGraphToSend.ProductWithSingleVal = fullGraph
 	} else if unit == "season" {
 		var graphDualValues []entities.GraphDualXValues
 		//var graphProperValues []entities.GraphProperValues
@@ -1017,9 +1070,9 @@ func CustomQueryMaker(w http.ResponseWriter, r *http.Request) {
 												ELSE 4
 									 		 END`).Scan(&dualDates)
 		fmt.Println("Length seasons", len(dualDates))
-		fullGraph := graphReady(graphSeasonalCustomizable, len(dualDates))
-		graphToSend.GraphType = 3
-		graphToSend.ProductWithValues = fullGraph
+		fullGraph = graphReadySingleVal(graphSeasonalCustomizable, len(dualDates))
+		newGraphToSend.GraphType = 3
+		newGraphToSend.ProductWithSingleVal = fullGraph
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
