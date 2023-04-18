@@ -19,6 +19,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { MatRadioModule } from '@angular/material/radio';
+import { MatDialogModule } from '@angular/material/dialog'
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientModule } from '@angular/common/http';
@@ -36,7 +37,6 @@ import { Explore4Component } from './explore4/explore4.component';
 import { Explore5Component } from './explore5/explore5.component';
 import { Explore6Component } from './explore6/explore6.component';
 import { Explore7Component } from './explore7/explore7.component';
-import { MatDialogModule } from '@angular/material/dialog'
 
 @NgModule({
   declarations: [
