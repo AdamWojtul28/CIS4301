@@ -8,49 +8,31 @@ import {map, startWith} from 'rxjs/operators';
 // 2. In console type "npm install chart.js"
 import { Chart } from 'chart.js/auto';
 
-interface ProductStruct {
-    product_title: string;
-    y_values: number[];
-}
-
-interface graphData {
-    graph_type: number;
-    product_structs: ProductStruct[];
-}
-
-interface datasets_interface {
-    label: string;
-    data: number[];
-}
-
 @Component({
   selector: 'app-datapage',
   templateUrl: './datapage.component.html',
   styleUrls: ['./datapage.component.css']
 })
 export class DatapageComponent implements OnInit {
-  max = 120;
-  min = 0;
-  step = 10;
-  thumbLabel = true;
-  slideStart = 0;
-  slideEnd = 120;
-  postId: string;
-  inputGroup: FormGroup;
-  sexGroup: FormGroup;
-  ageGroup: FormGroup;
-  demoGroup: FormGroup;
-  dispositionGroup: FormGroup;
-  locationGroup: FormGroup;
-  filteredOptions: Observable<string[]>;
-    options: string[] = ['Delhi', 'Mumbai', 'Banglore'];    
-    
-    public MyChart: Chart;
-    public chart: any;
-    public graphData: any;
-    public graphType: number;
-    graphY: any;
+    max = 120;
+    min = 0;
+    step = 10;
+    thumbLabel = true;
+    slideStart = 0;
+    slideEnd = 120;
+    inputGroup: FormGroup;
+    sexGroup: FormGroup;
+    ageGroup: FormGroup;
+    demoGroup: FormGroup;
+    dispositionGroup: FormGroup;
+    locationGroup: FormGroup;
+    filteredOptions: Observable<string[]>;
+    chart: any;
+    graphData: any;
+    graphType: number;
 
+    options: string[] = ['Delhi', 'Mumbai', 'Banglore']; 
+    
     yearLabels: string[] = ['2016', '2017', '2018', '2019', '2020', '2021'];
     monthLabels: string[] = ['Jan 2016', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
                              'Jan 2017', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
@@ -77,8 +59,6 @@ export class DatapageComponent implements OnInit {
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {}
     ngOnInit() {
-        //this.createChart();
-
         this.filteredOptions = this.search.valueChanges.pipe(
             startWith(''),
             map(value => this._filterLabels(value || '')),
@@ -129,20 +109,13 @@ export class DatapageComponent implements OnInit {
         this.addDataToSend(formData);
         this.http.post('http://localhost:5000/users/sendData', formData)
         .subscribe(data =>{
-            //console.log(data);
-            //this.postId=JSON.stringify(data);
-            //console.log(this.postId);
-            //this.graphData = this.parseData(this.postId);
-            //console.log(this.graphData);
-            
             this.graphData = data;
             console.log(this.graphData);
-            this.graphType = this.graphData.graph_type;
-            localStorage.setItem("Array", JSON.stringify(this.graphData));
+            this.graphType = this.graphData.graph_type;            
             
-            
-            
-            if (this.graphType == 1)
+            if (this.graphType == 0) 
+                console.log('Empty Query... no graph');
+            else if (this.graphType == 1)
                 console.log('Yearly');
             else if (this.graphType == 2)
                 console.log('Monthly');
@@ -151,38 +124,18 @@ export class DatapageComponent implements OnInit {
             else
                 console.log('There was an error with the Graph Type number.');
             
-            for (let i = 0; i < this.graphData.product_structs.length; i++) {
-              const product = this.graphData.product_structs[i].product_title;
-              //'Product Title: ', this.graphData.product_structs[i].product_title
-              console.log('Product Title: ', product);
-              for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
-                const point = this.graphData.product_structs[i].y_values[j];
-                //'Y value: ', this.graphData.product_structs[i].graph_point[j].y_value
-                console.log('Y value: ', point);
-              }
+            if (this.graphType != 0) {
+                for (let i = 0; i < this.graphData.product_structs.length; i++) {
+                    const product = this.graphData.product_structs[i].product_title;
+                    console.log('Product Title: ', product);
+                    for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                        const point = this.graphData.product_structs[i].y_values[j];
+                        console.log('Y value: ', point);
+                    }
+                }
+                this.createChart(this.graphData);
             }
-
-            this.createChart(this.graphData);
         });
-    }
-    
-    parseData(dataString: string) {
-      const graphData: graphData = JSON.parse(dataString);
-    
-      //console.log(graphData);
-
-      this.graphType = graphData.graph_type;
-      const productStructs = graphData.product_structs.map((product: any) => {
-        const productTitle = product.product_title;
-        const graphPoints = product.graph_point.map((point: any) => {
-          const xValue = point.x_value;
-          const yValue = point.y_value;
-          return { x: xValue, y: yValue };
-        });
-        return { product_title: productTitle, graph_point: graphPoints };
-      });
-    
-      return { graph_type: this.graphType, product_structs: productStructs };
     }
 
     addDataToSend(formData: FormData) {
@@ -223,7 +176,6 @@ export class DatapageComponent implements OnInit {
     }
 
     resetAll() {
-        //this.search.setValue('');
         this.search.reset();
         this.inputGroup.setValue({search: '', unit: 'year'});
         this.ageGroup.setValue({ageStart: 0, ageEnd: 120});
@@ -233,237 +185,104 @@ export class DatapageComponent implements OnInit {
         this.locationGroup.reset();
     }
 
-    createChart(graphData: any){
-      let chartStatus = this.chart; // <canvas> id
-      if (chartStatus != undefined) {
-        chartStatus.destroy();
-      }
+    createChart(graphData: any) {
+        let chartStatus = this.chart;
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
 
-      if (this.graphType == 1) {
-        this.chart = new Chart("MyChart", {
-            type: 'line', //this denotes tha type of chart
-            data: {// values on X-Axis
+        if (this.graphType == 0) {
+            console.log('Empty query graph should be empty.');
+        }
+        else if (this.graphType == 1) {
+            this.chart = new Chart("MyChart", {
+            type: 'line', 
+            data: {
                 labels: this.yearLabels, 
                 datasets: []
             },
             options: {
-                aspectRatio:2.5
+                  aspectRatio:2.5
+            }  
+            });
+  
+            for (let i = 0; i < this.graphData.product_structs.length; i++) {
+                var tempArr:number[] = new Array(this.graphData.product_structs[i].y_values.length);
+                
+                for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                    tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
+                }
+
+                console.log(tempArr);
+                var temp = {
+                    label: this.graphData.product_structs[i].product_title,
+                    data: tempArr
+                };
+                this.chart.data.datasets.push(temp);
             }
-            
-        });
-          //const testing: datasets_interface = 
-          //    {
-          //        label: "One",
-          //        data: [1, 2, 3, 4, 5, 6]
-          //    };
-          //this.chart.data.datasets.push(testing);
-
-          for (let i = 0; i < this.graphData.product_structs.length; i++) {
-              
-            var tempArr:number[] = new Array(this.graphData.product_structs[i].y_values.length);
-
-            for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
-                tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
-            }
-              
-              console.log(tempArr);
-            var temp = {
-                label: this.graphData.product_structs[i].product_title,
-                data: tempArr
-            };
-            
-            //console.log(temp);
-            //console.log('HERE');
-            //temp.data = tempArr;
-            this.chart.data.datasets.push(temp);
-          }
-
-
-
-
-
-        // for (let i = 0; i < this.graphData.product_structs.length; i++) {
-        //     this.chart.data.datasets.forEach((dataset: any) => {
-        //         dataset.label = this.graphData.product_structs[i].product_title;
-        //   });
-          
-        //   for (let j = 0; j < this.graphData.product_structs[i].graph_point.length; j++) {
-        //       //this.chart.data.datasets.forEach((dataset: any) => {
-        //         //dataset.data = this.graphData.product_structs[i].graph_point;
-        //       this.chart.data.datasets.push(this.graphData.product_structs[i].product_title, )
-        //   });
-          
-        //   }
-          
-          this.chart.update();
-    } 
-        // MONTHLY GRAPH
-    else if (this.graphType == 2) {
-        this.chart = new Chart("MyChart", {
-            type: 'line', //this denotes tha type of chart
+                this.chart.update();
+        }
+          // MONTHLY GRAPH
+        else if (this.graphType == 2) {
+            this.chart = new Chart("MyChart", {
+                type: 'line',
+                data: {
+                    labels: this.monthLabels, 
+                    datasets: []
+                },
+                options: {
+                      aspectRatio:2.5
+                }  
+                });
       
-            data: {// values on X-Axis
-                labels: this.monthLabels, 
-                 datasets: [
-                  {
-                      label: "",
-                      data: [],
-                      backgroundColor:'limegreen',
-                      borderColor: 'limegreen'
-                  }
-              ]
-            },
-            options: {
-              aspectRatio:2.5
-            }
-            
-        });
-    }
-        // SEASONAL GRAPH
-    else if (this.graphType == 3) {
-        this.chart = new Chart("MyChart", {
-            type: 'line', //this denotes tha type of chart
-      
-            data: {// values on X-Axis
-                labels: this.seasonLabels, 
-                 datasets: [
-                  {
-                      label: "",
-                      data: [],
-                      backgroundColor:'limegreen',
-                      borderColor: 'limegreen'
-                  }
-              ]
-            },
-            options: {
-              aspectRatio:2.5
-            }
-            
-        });
-    }
-    else {
-        console.log('There was an error detecting the graph type number.');
-    }
-
-/*
-        this.chart = new Chart("MyChart", {
-          type: 'line', //this denotes tha type of chart
+                for (let i = 0; i < this.graphData.product_structs.length; i++) {
+                    var tempArr:number[] = new Array(this.graphData.product_structs[i].y_values.length);
+                    
+                    for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                        tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
+                    }
     
-          data: {// values on X-Axis
-            labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-                            '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17' ], 
-               datasets: [
-                {
-                    label: "Sales",
-                    data: ['467','576', '572', '79', '92',
-                               '574', '573', '576'],
-                    backgroundColor:'limegreen',
-                    borderColor: 'limegreen'
+                    console.log(tempArr);
+                    var temp = {
+                        label: this.graphData.product_structs[i].product_title,
+                        data: tempArr
+                    };
+                    this.chart.data.datasets.push(temp);
+                }
+                    this.chart.update();
+        }
+            // SEASONAL GRAPH
+        else if (this.graphType == 3) {
+            this.chart = new Chart("MyChart", {
+                type: 'line',
+                data: {
+                    labels: this.seasonLabels, 
+                    datasets: []
                 },
-                {
-                    label: "Profit",
-                    data: ['542', '542', '536', '327', '17',
-                                '0.00', '538', '541'],
-                    backgroundColor:'blue',
-                    borderColor: 'blue'
-                },
-                {
-                    label: "Loss",
-                    data: ['300', '500', '400', '200', '600',
-                                '800', '900', '1000'],
-                    backgroundColor:'purple',
-                    borderColor: 'purple'
+                options: {
+                      aspectRatio:2.5
                 }  
-            ]
-          },
-          options: {
-            aspectRatio:2.5
-          }
-          
-          
-        });
-        */
-        /*
-        this.monthChart = new Chart("monthChart", {
-            type: 'line', //this denotes tha type of chart
+                });
       
-            data: {// values on X-Axis
-              labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-                                       '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
-                 datasets: [
-                {
-                  label: "Sales",
-                  data: ['467','576', '572', '79', '92',
-                                       '574', '573', '576'],
-                  backgroundColor: 'blue'
-                },
-                {
-                  label: "Profit",
-                  data: ['542', '542', '536', '327', '17',
-                                           '0.00', '538', '541'],
-                  backgroundColor: 'limegreen'
-                }  
-              ]
-            },
-            options: {
-              aspectRatio:2.5
-            }
-            
-        });
-        
-        this.seasonChart = new Chart("seasonChart", {
-            type: 'line', //this denotes tha type of chart
-      
-            data: {// values on X-Axis
-              labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-                                       '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ], 
-                 datasets: [
-                {
-                  label: "Sales",
-                  data: ['467','576', '572', '79', '92',
-                                       '574', '573', '576'],
-                  backgroundColor: 'blue'
-                },
-                {
-                  label: "Profit",
-                  data: ['542', '542', '536', '327', '17',
-                                           '0.00', '538', '541'],
-                  backgroundColor: 'limegreen'
-                }  
-              ]
-            },
-            options: {
-              aspectRatio:2.5
-            }
-            
-        });
-        
-        this.yearChart = new Chart("yearChart", {
-            type: 'line', //this denotes tha type of chart
-      
-            data: {// values on X-Axis
-              labels: ['2016', '2017', '2018', '2019', '2020', '2021'], 
-                 datasets: [
-                {
-                  label: "Sales",
-                  data: ['467','576', '572', '79', '92',
-                                       '574', '573', '576'],
-                  backgroundColor: 'blue'
-                },
-                {
-                  label: "Profit",
-                  data: ['542', '542', '536', '327', '17',
-                                           '0.00', '538', '541'],
-                  backgroundColor: 'limegreen'
-                }  
-              ]
-            },
-            options: {
-              aspectRatio:2.5
-            }
-            
-          });
-        */
+                for (let i = 0; i < this.graphData.product_structs.length; i++) {
+                    var tempArr:number[] = new Array(this.graphData.product_structs[i].y_values.length);
+                    
+                    for (let j = 0; j < this.graphData.product_structs[i].y_values.length; j++) {
+                        tempArr[j] = this.graphData.product_structs[i].y_values[j].y_value;
+                    }
+    
+                    console.log(tempArr);
+                    var temp = {
+                        label: this.graphData.product_structs[i].product_title,
+                        data: tempArr
+                    };
+                    this.chart.data.datasets.push(temp);
+                }
+                    this.chart.update();
+        }
+        else {
+            console.log('There was an error detecting the graph type number.');
+        }
     }
 }
 
