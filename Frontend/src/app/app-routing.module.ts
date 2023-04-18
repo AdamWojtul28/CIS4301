@@ -12,6 +12,8 @@ import { Explore2Component } from './explore2/explore2.component';
 import { Explore3Component } from './explore3/explore3.component';
 import { Explore4Component } from './explore4/explore4.component';
 import { Explore5Component } from './explore5/explore5.component';
+import { Explore6Component } from './explore6/explore6.component';
+import { Explore7Component } from './explore7/explore7.component';
 
 const routes: Routes = [
     { path: '', component: LandingPageComponent },
@@ -25,7 +27,9 @@ const routes: Routes = [
     { path: 'explore2', component: Explore2Component },
     { path: 'explore3', component: Explore3Component },
     { path: 'explore4', component: Explore4Component },
-    { path: 'explore5', component: Explore5Component }
+    { path: 'explore5', component: Explore5Component },
+    { path: 'explore6', component: Explore6Component },
+    { path: 'explore7', component: Explore7Component }
 ];
 
 @NgModule({
