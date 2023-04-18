@@ -4,14 +4,24 @@
 }
 .body {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 .homeButton {
     margin-top: 10px;
-    margin-left: 40px;
+    margin-left: 80px;
 }
 .rightGrid {
-    margin-left: -280px;
+    margin-left: 50px;
+}
+.exploreButton{
+    margin-top: 10px;
+    margin-left: 380px;
+}
+.button2{
+    width: 170px;
+    height: 50px;
+    margin-top: 30px;
+    font-size: large;
 }
 .text {
     font-size: 2.5vw;
