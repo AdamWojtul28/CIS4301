@@ -1209,19 +1209,19 @@ func ComplexQuerySelector(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Println(complexQueryNumber)
-	if complexQueryNumber == 0 {
+	if complexQueryNumber == 1 {
 		AllCasesOfProductInjury(w, r)
-	} else if complexQueryNumber == 1 {
-		TopTwentyFive(w, r)
 	} else if complexQueryNumber == 2 {
-		ConstantDangers(w, r)
+		TopTwentyFive(w, r)
 	} else if complexQueryNumber == 3 {
-		Fatality(w, r)
+		ConstantDangers(w, r)
 	} else if complexQueryNumber == 4 {
-		SummertimeSadness(w, r)
+		Fatality(w, r)
 	} else if complexQueryNumber == 5 {
-		SeasonalHazards(w, r)
+		SummertimeSadness(w, r)
 	} else if complexQueryNumber == 6 {
+		SeasonalHazards(w, r)
+	} else if complexQueryNumber == 7 {
 		MostDangersHouseProductRog(w, r)
 	}
 }
