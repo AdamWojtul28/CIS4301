@@ -523,14 +523,13 @@ func TopTwentyFive(w http.ResponseWriter, r *http.Request) {
 					FROM "DENNIS.KIM".Patient Pat, 
 			    		 "DENNIS.KIM".InjuryInfo I, 
 						 "DENNIS.KIM".Product Prod
-					WHERE Pat.CASENUMBER = I.CASENUMBER
+					WHERE Pat.CaseNumber = I.CaseNumber
 						  AND I.Product1Code = Prod.Code    
-						  AND I.PRODUCT1CODE IN (SELECT PRODUCT1CODE
-												 FROM (SELECT PRODUCT1CODE, COUNT(*) AS INCIDENTS
-													   FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
-													   WHERE P.CASENUMBER = I.CASENUMBER
-													   GROUP BY PRODUCT1CODE
-													   ORDER BY INCIDENTS DESC)TEMP
+						  AND I.Product1Code IN (SELECT Product1Code
+												 FROM (SELECT Product1Code, COUNT(*) AS Incidents
+													   FROM "DENNIS.KIM".InjuryInfo
+													   GROUP BY Product1Code
+													   ORDER BY Incidents DESC)Temp
 												 FETCH FIRST 25 ROWS ONLY)
 					GROUP BY EXTRACT(YEAR FROM TreatmentDate), Prod.Title
 					ORDER BY Prod.Title, EXTRACT(YEAR FROM TreatmentDate)`).Scan(&graphValues)
@@ -564,18 +563,17 @@ func ConstantDangers(w http.ResponseWriter, r *http.Request) {
 	var graphDualValues []entities.GraphDualXValues
 	var graphDualProper []entities.GraphProperValues
 	DBInstance.Raw(`WITH TopFiveMonthly(Product1Code, Month, Year, Incidents, Rank) AS
-					    (SELECT C.Product1Code, 
+					    (SELECT I.Product1Code, 
 					            EXTRACT(MONTH FROM TreatmentDate) AS Month, 
 					            EXTRACT(YEAR FROM TreatmentDate) AS Year, 
 					            COUNT(*) AS Incidents, 
 					            ROW_NUMBER() OVER (PARTITION BY EXTRACT(MONTH FROM TreatmentDate),
 					                                            EXTRACT(YEAR FROM TreatmentDate) 
-					                               ORDER BY EXTRACT(YEAR FROM TreatmentDate), 
-					                                        EXTRACT(MONTH FROM TreatmentDate)
+					                               ORDER BY COUNT(*) DESC
 					                               ) AS Rank
-					     FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".Causes C
-					     WHERE P.CaseNumber = C.CaseNumber
-					     GROUP BY C.Product1Code, 
+					     FROM "DENNIS.KIM".Patient P, "DENNIS.KIM".InjuryInfo I
+					     WHERE P.CaseNumber = I.CaseNumber
+					     GROUP BY I.Product1Code, 
 					              EXTRACT(MONTH FROM TreatmentDate),
 					              EXTRACT(YEAR FROM TreatmentDate)
 					     ORDER BY EXTRACT(YEAR FROM TreatmentDate) ASC, 
